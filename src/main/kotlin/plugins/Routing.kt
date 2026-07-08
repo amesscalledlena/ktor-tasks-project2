@@ -1,7 +1,8 @@
 package com.example.plugins
 
-import com.example.models.Task
-import com.example.models.Tasks
+import com.example.models.TaskCreate
+import com.example.models.TaskTbl
+import com.example.models.TaskUpdate
 import io.ktor.server.application.*
 import io.ktor.server.request.receive
 import io.ktor.server.response.*
@@ -17,85 +18,79 @@ import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 
 
-// CRUD for the tasks table, using endpoints
+
 
 fun Application.configureRouting() {
     routing {
         route("/tasks"){
             //CREATE
             post{
-                val newTask = call.receive<Task>()
+                val newTaskCreate = call.receive<TaskCreate>()
                 val createdTaskId = transaction{
-                    Tasks.insert{
-                        it[Tasks.title] = newTask.title
-                        it[Tasks.description] = newTask.description
-                        it[Tasks.updatedAt] = Instant.now().toString()
-                        it[Tasks.isCompleted] = newTask.isCompleted
-                    } get Tasks.id
+                    TaskTbl.insert{
+                        it[TaskTbl.title] = newTaskCreate.title
+                        it[TaskTbl.description] = newTaskCreate.description
+                        it[TaskTbl.updatedAt] = Instant.now().toString()
+                    } get TaskTbl.id
                 }
                 call.respond(HttpStatusCode.Created, "created Task Id = $createdTaskId")
             }
 
             //READ ALL
             get{
-                val tasks = transaction {
-                    Tasks.selectAll().map { row ->
-                        Task(
-                            row[Tasks.id],
-                            row[Tasks.title],
-                            row[Tasks.description],
-                            row[Tasks.updatedAt],
-                            row[Tasks.isCompleted]
+                val taskCreates = transaction {
+                    TaskTbl.selectAll().map { row ->
+                        TaskCreate(
+                            row[TaskTbl.title],
+                            row[TaskTbl.description],
                         )
                     }
                 }
-                call.respond(HttpStatusCode.OK, tasks.toList())
+                call.respond(HttpStatusCode.OK, taskCreates.toList())
             }
             //READ ONE
-            get("{id}"){
+            get("/id"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                val task = transaction {
-                    Tasks.selectAll().where{ Tasks.id eq taskId}.map { row ->
-                        Task(
-                            id = row[Tasks.id],
-                            title = row[Tasks.title],
-                            description = row[Tasks.description],
-                            isCompleted = row[Tasks.isCompleted],
-                            updatedAt = row [Tasks.updatedAt],
+                val taskCreate = transaction {
+                    TaskTbl.selectAll().where{ TaskTbl.id eq taskId}.map { row ->
+                        TaskCreate(
+                            title = row[TaskTbl.title],
+                            description = row[TaskTbl.description],
                         )
                     }.singleOrNull()
                 }
-                if (task != null) {
-                    call.respond(HttpStatusCode.OK, task)
+                if (taskCreate != null) {
+                    call.respond(HttpStatusCode.OK, taskCreate)
                 } else{
                     call.respond(HttpStatusCode.NotFound)
                 }
             }
 
             //UPDATE
-            put("{id}"){
+            put("/id"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
-                val updatedTask = call.receive<Task>()
+                val updatedTaskCreate = call.receive<TaskUpdate>()
                 val updatedRowCount = transaction{
-                    Tasks.update({ Tasks.id eq taskId}){
-                        it[Tasks.title] = updatedTask.title
-                        it[Tasks.description] = updatedTask.description
-                        it[Tasks.updatedAt] = Instant.now().toString()
-                        it[Tasks.isCompleted] = updatedTask.isCompleted
+                    TaskTbl.update({ TaskTbl.id eq taskId}){
+                        it[TaskTbl.title] = updatedTaskCreate.title
+                        it[TaskTbl.description] = updatedTaskCreate.description
+                        it[TaskTbl.updatedAt] = Instant.now().toString()
+                        it[TaskTbl.isCompleted] = updatedTaskCreate.isCompleted
                     }
                 }
 
                 if(updatedRowCount>0){
-                    call.respond(HttpStatusCode.OK, updatedTask)
+                    call.respond(HttpStatusCode.OK, updatedTaskCreate)
                 }else{
                     call.respond(HttpStatusCode.NotFound)
             }
             }
+
             //DELETE
-            delete ("{id}"){
+            delete ("/id"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
                 val deletedRowCount = transaction{
-                    Tasks.deleteWhere { Tasks.id eq taskId }
+                    TaskTbl.deleteWhere { TaskTbl.id eq taskId }
                 }
                 if(deletedRowCount > 0){
                     call.respond(HttpStatusCode.OK)
