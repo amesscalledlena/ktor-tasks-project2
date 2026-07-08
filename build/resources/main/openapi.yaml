@@ -1,0 +1,91 @@
+openapi: "3.0.3"
+
+info:
+  title: "Tasks API"
+  version: "1.0.0"
+  description: "CRUD API for the Task table"
+
+paths:
+  /tasks:
+    get:
+      summary: "Get all tasks"
+      responses:
+        "200":
+          description: "A list of all tasks"
+          content:
+            applicatipn/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Task"
+
+    post:
+      summary: "Create a new task"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+      responses:
+        "201":
+          description: "Task created"
+
+  /tasks/id:
+    parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: "The ID of the task"
+        schema:
+          type: "integer"
+
+    get:
+      summary: "Get a specific task"
+      responses:
+        "200":
+          description: "Requested task"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: "Not found"
+
+    put:
+      summary: "Update a task"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+      responses:
+        "200":
+          description: "Task updated"
+        "404":
+          description: "Not found"
+
+    delete:
+      summary: "Delete a task"
+      responses:
+        "200":
+          description: "Task deleted"
+        "404":
+          description: "Not found"
+
+components:
+  schemas:
+    Task:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+        title:
+          type: "string"
+        description:
+          type: "string"
+        updatedAt:
+          type: "string"
+        isCompleted:
+          type: "boolean"

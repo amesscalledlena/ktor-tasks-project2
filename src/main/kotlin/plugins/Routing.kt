@@ -9,19 +9,20 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import java.time.Instant
-
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.plugins.swagger.swaggerUI
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 
-
-
+// Configure routing - postman - request body for openAPI
 
 fun Application.configureRouting() {
     routing {
+        swaggerUI(path = "swagger", swaggerFile = "openapi.yaml") //This will host your YAML file on a web interface at http://localhost:8080/swagger
+
         route("/tasks"){
             //CREATE
             post{
@@ -49,7 +50,7 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.OK, taskCreates.toList())
             }
             //READ ONE
-            get("/id"){
+            get("/{id}"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
                 val taskCreate = transaction {
                     TaskTbl.selectAll().where{ TaskTbl.id eq taskId}.map { row ->
@@ -67,7 +68,7 @@ fun Application.configureRouting() {
             }
 
             //UPDATE
-            put("/id"){
+            put("/{id}"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
                 val updatedTaskCreate = call.receive<TaskUpdate>()
                 val updatedRowCount = transaction{
@@ -87,7 +88,7 @@ fun Application.configureRouting() {
             }
 
             //DELETE
-            delete ("/id"){
+            delete ("/{id}"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
                 val deletedRowCount = transaction{
                     TaskTbl.deleteWhere { TaskTbl.id eq taskId }
