@@ -1,6 +1,6 @@
 package com.example
 
-import com.example.Tasks
+import com.example.models.Tasks
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
@@ -10,6 +10,7 @@ import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
+import java.time.Instant
 
 fun main() {
     Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver")
@@ -39,6 +40,7 @@ fun main() {
 
         Tasks.update ({ Tasks.id eq taskId }){ //Returns the number of updated rows
             it[isCompleted] = true
+            it[updatedAt] = Instant.now().toString()
         }
 
         val updatedTask = Tasks.select(Tasks.isCompleted).where(Tasks.id eq taskId).single()
@@ -47,7 +49,5 @@ fun main() {
 
         Tasks.deleteWhere { Tasks.id eq secondTaskId } // Returns the number of deleted rows
         println("Remaining tasks: ${Tasks.selectAll().toList()}")
-        rollback()
-        commit()
     }
 }
