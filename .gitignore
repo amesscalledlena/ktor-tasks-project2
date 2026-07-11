@@ -1,0 +1,21 @@
+# 1. Gradle and Compiler Files (Often deleted/rebuilt)
+.gradle/
+build/
+out/
+
+# 2. IntelliJ IDEA / IDE Configuration Files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# 3. Database Files
+# If you ever switch H2 from 'in-memory' to a physical file,
+# you don't want to commit the database to Git.
+*.db
+*.mv.db
+*.trace.db
+
+# 4. OS Specific System Files
+.DS_Store
+Thumbs.db
