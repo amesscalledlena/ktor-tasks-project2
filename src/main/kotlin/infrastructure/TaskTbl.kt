@@ -1,20 +1,7 @@
-package com.example.models
+package com.example.infrastructure
 
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.v1.core.Table
 
-@Serializable
-data class TaskCreate(
-    val title: String,
-    val description: String
-)
-
-@Serializable
-data class TaskUpdate(
-    val title: String,
-    val description: String,
-    val isCompleted: Boolean
-)
 
 object TaskTbl : Table() {
     val id = integer("id").autoIncrement()

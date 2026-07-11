@@ -1,9 +1,6 @@
-package com.example.plugins
+package com.example.presentation
 
-import com.example.models.PaginatedResponse
-import com.example.models.TaskCreate
-import com.example.models.TaskTbl
-import com.example.models.TaskUpdate
+import com.example.infrastructure.TaskTbl
 import io.ktor.server.application.*
 import io.ktor.server.request.receive
 import io.ktor.server.response.*

@@ -1,8 +1,8 @@
 package com.example
 
-import com.example.models.TaskTbl
-import com.example.plugins.configureRouting
-import com.example.plugins.configureSerialization
+import com.example.infrastructure.TaskTbl
+import com.example.presentation.configureRouting
+import com.example.presentation.configureSerialization
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
