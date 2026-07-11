@@ -29,13 +29,22 @@ paths:
             maximum: 100
       responses:
         "200":
-          description: "A list of all tasks"
+          description: "A paginated list of all tasks"
           content:
             application/json:
               schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Task"
+                type: "object"
+                properties:
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Task"
+                  totalItems:
+                    type: "integer"
+                  totalPages:
+                    type: "integer"
+                  currentPage:
+                    type: "integer"
 
     post:
       summary: "Create a new task"

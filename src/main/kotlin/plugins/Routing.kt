@@ -1,5 +1,6 @@
 package com.example.plugins
 
+import com.example.models.PaginatedResponse
 import com.example.models.TaskCreate
 import com.example.models.TaskTbl
 import com.example.models.TaskUpdate
@@ -46,8 +47,11 @@ fun Application.configureRouting() {
 
                 val offset =((safePage-1)*safelimit).toLong()
 
-                val taskCreates = transaction {
-                    TaskTbl.selectAll()
+                val paginatedResult = transaction {
+                    val totalItems = TaskTbl.selectAll().count()
+                    val totalPages = ((totalItems + safelimit - 1) / safelimit).toInt()
+
+                    val tasks = TaskTbl.selectAll()
                         .limit(safelimit)
                         .offset(offset)
                         .map { row ->
@@ -55,9 +59,15 @@ fun Application.configureRouting() {
                             row[TaskTbl.title],
                             row[TaskTbl.description],
                         )
-                    }
+                        }
+                    PaginatedResponse(
+                        data=tasks,
+                        totalPages = totalPages,
+                        totalItems = totalItems,
+                        currentPage = safePage
+                    )
                 }
-                call.respond(HttpStatusCode.OK, taskCreates)
+                call.respond(HttpStatusCode.OK, paginatedResult)
             }
             //READ ONE
             get("/{id}"){
