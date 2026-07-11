@@ -1,23 +1,27 @@
 package com.example
 
 import com.example.models.TaskTbl
-import org.jetbrains.exposed.v1.core.*
+import com.example.plugins.configureRouting
+import com.example.plugins.configureSerialization
+import io.ktor.server.application.*
+import io.ktor.server.cio.*
+import io.ktor.server.engine.*
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insert
-import org.jetbrains.exposed.v1.jdbc.select
-import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import org.jetbrains.exposed.v1.jdbc.update
-import java.time.Instant
 
-fun main() {
-    Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver")
+fun Application.module() {
+    configureSerialization()
+    configureRouting()
+}
+fun main(args : Array<String>) {
+    Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+    //io.ktor.server.cio.EngineMain.main(args)
+
 //
-//    transaction {
+    transaction {
 //        //addLogger(StdOutSqlLogger) //print sql to std-out
-//        SchemaUtils.create(TaskTbl) // Creates the tasks table
+        SchemaUtils.create(TaskTbl) // Creates the tasks table
 //
 //        val taskId = TaskTbl.insert {
 //            it[title]="Learn Exposed"
@@ -49,5 +53,11 @@ fun main() {
 //
 //        TaskTbl.deleteWhere { TaskTbl.id eq secondTaskId } // Returns the number of deleted rows
 //        println("Remaining tasks: ${TaskTbl.selectAll().toList()}")
-//    }
+   }
+
+    embeddedServer(CIO, port = 8080, host = "0.0.0.0") {
+        module()
+    }.start(wait = true)
 }
+
+

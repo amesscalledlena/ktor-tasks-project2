@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(ktorLibs.plugins.ktor)
+    kotlin("plugin.serialization") version "2.4.0"
 }
 
 group = "com.example"
@@ -34,6 +35,9 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:1.0.0")
 
     implementation("io.ktor:ktor-server-swagger:3.5.0")
+
+    implementation("io.ktor:ktor-server-content-negotiation-jvm")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)

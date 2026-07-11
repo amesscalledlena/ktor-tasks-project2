@@ -9,6 +9,7 @@ data class TaskCreate(
     val description: String
 )
 
+@Serializable
 data class TaskUpdate(
     val title: String,
     val description: String,

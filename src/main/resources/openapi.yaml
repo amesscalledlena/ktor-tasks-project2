@@ -8,12 +8,30 @@ info:
 paths:
   /tasks:
     get:
-      summary: "Get all tasks"
+      summary: "Get a paginated list of tasks"
+      parameters:
+        - name: "page"
+          in: "query"
+          description: "The page number to retrieve"
+          required: false
+          schema:
+            type: "integer"
+            default: 1
+            minimum: 1
+        - name: "limit"
+          in: "query"
+          description: "The maximum number of tasks to return per page"
+          required: false
+          schema:
+            type: "integer"
+            default: 10
+            minimum: 1
+            maximum: 100
       responses:
         "200":
           description: "A list of all tasks"
           content:
-            applicatipn/json:
+            application/json:
               schema:
                 type: "array"
                 items:
@@ -26,12 +44,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: "#/components/schemas/TaskCreate"
       responses:
         "201":
           description: "Task created"
 
-  /tasks/id:
+  /tasks/{id}:
     parameters:
       - name: "id"
         in: "path"
@@ -59,7 +77,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: "#/components/schemas/TaskUpdate"
       responses:
         "200":
           description: "Task updated"
@@ -78,14 +96,47 @@ components:
   schemas:
     Task:
       type: "object"
+      required:
+        - id
+        - title
+        - description
       properties:
         id:
           type: "integer"
+          readOnly: true
         title:
           type: "string"
         description:
           type: "string"
         updatedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        isCompleted:
+          type: "boolean"
+          nullable: true
+
+    TaskCreate:
+      type: "object"
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: "string"
+        description:
+          type: "string"
+
+    TaskUpdate:
+      type: "object"
+      required:
+        - title
+        - description
+        - isCompleted
+      properties:
+        title:
+          type: "string"
+        description:
           type: "string"
         isCompleted:
           type: "boolean"

@@ -17,7 +17,8 @@ import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 
-// Configure routing - postman - request body for openAPI
+
+// Gitignore - pagination - Ktor project format - openAPI
 
 fun Application.configureRouting() {
     routing {
@@ -39,15 +40,26 @@ fun Application.configureRouting() {
 
             //READ ALL
             get{
+                val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+
+                val safePage = if (page > 0) page else 1
+                val safelimit = if (limit in 1..100) limit else 10
+
+                val offset =((safePage-1)*safelimit).toLong()
+
                 val taskCreates = transaction {
-                    TaskTbl.selectAll().map { row ->
+                    TaskTbl.selectAll()
+                        .limit(safelimit)
+                        .offset(offset)
+                        .map { row ->
                         TaskCreate(
                             row[TaskTbl.title],
                             row[TaskTbl.description],
                         )
                     }
                 }
-                call.respond(HttpStatusCode.OK, taskCreates.toList())
+                call.respond(HttpStatusCode.OK, taskCreates)
             }
             //READ ONE
             get("/{id}"){
