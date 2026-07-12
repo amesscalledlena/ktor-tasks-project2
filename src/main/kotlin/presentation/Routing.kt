@@ -1,6 +1,5 @@
 package com.example.presentation
 
-import com.example.application.*
 import com.example.application.commands.CreateTaskCommand
 import com.example.application.commands.CreateTaskCommandHandler
 import com.example.application.commands.DeleteTaskCommand
@@ -37,7 +36,7 @@ fun Application.configureRouting() {
             post {
                 val newTask = call.receive<TaskCreate>()
                 val command = CreateTaskCommand(newTask.title, newTask.description)
-                val newTaskId = createHandler.handle(command)
+                val newTaskId = createHandler.execute(command)
                 call.respond(HttpStatusCode.Created, "Created new task with ID $newTaskId")
             }
             //READ ALL
@@ -47,15 +46,15 @@ fun Application.configureRouting() {
 
                 val query = PaginatedTasksQuery(limit, page)
                 val allTasks = getPaginatedHandler.handle(query)
-                /*val webResponse = PaginatedResponse(
-                    data = result.tasks.map { TaskCreate(it.title, it.description) },
-                    totalItems = result.totalItems,
-                    totalPages = result.totalPages,
-                    currentPage = result.currentPage
+                val webResponse = PaginatedResponse(
+                    data = allTasks.tasks.map { TaskCreate(it.title.value, it.description.value) },
+                    totalItems = allTasks.totalItems,
+                    totalPages = allTasks.totalPages,
+                    currentPage = allTasks.currentPage
                 )
 
-                call.respond(HttpStatusCode.OK, webResponse)*/
-                call.respond(HttpStatusCode.OK, allTasks)
+                call.respond(HttpStatusCode.OK, webResponse)
+                //call.respond(HttpStatusCode.OK, allTasks)
             }
             //READ ONE
             get("/{id}"){
@@ -64,7 +63,11 @@ fun Application.configureRouting() {
                 val query = GetTaskQuery(taskId)
                 val task = getTaskHandler.handle(query)
                 if (task != null) {
-                    call.respond(HttpStatusCode.OK, task)
+                    val webResponse = TaskCreate(
+                        title = task.title.value,
+                        description = task.description.value,
+                    )
+                    call.respond(HttpStatusCode.OK, webResponse)
                 }else{
                     call.respond(HttpStatusCode.NotFound)
                 }
@@ -79,9 +82,9 @@ fun Application.configureRouting() {
                     updatedTaskData.description,
                     updatedTaskData.isCompleted
                 )
-                val updatedTask = updateHandler.handle(command)
+                val updatedTask = updateHandler.execute(command)
 
-                if (updatedTask != null) {
+                if (updatedTask) {
                     call.respond(HttpStatusCode.OK, updatedTask)
                 } else{
                     call.respond(HttpStatusCode.NotFound)
@@ -91,8 +94,8 @@ fun Application.configureRouting() {
             delete ("/{id}"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
                 val command = DeleteTaskCommand(taskId)
-                val deletedTaskResult = deleteHandler.handle(command)
-                if (deletedTaskResult != null) {
+                val deletedTaskResult = deleteHandler.execute(command)
+                if (deletedTaskResult) {
                     call.respond(HttpStatusCode.OK, deletedTaskResult)
                 }else{
                     call.respond(HttpStatusCode.NotFound)

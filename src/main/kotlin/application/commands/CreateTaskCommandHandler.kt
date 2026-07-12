@@ -1,11 +1,18 @@
 package com.example.application.commands
 
+import com.example.domain.Task
+import com.example.domain.TaskDescription
 import com.example.domain.TaskRepository
-import java.time.Instant
+import com.example.domain.TaskTitle
 
-class CreateTaskCommandHandler(private val repository: TaskRepository) {
-    fun handle(command: CreateTaskCommand): Int {
-        val updatedAt = Instant.now().toString()
-        return repository.insert(command.title, command.description, updatedAt)
+class CreateTaskCommandHandler(
+    private val repository: TaskRepository
+) {
+    fun execute(command: CreateTaskCommand): Int {
+        val titleVO = TaskTitle(command.title)
+        val descriptionVO = TaskDescription(command.description)
+
+        val newTask = Task.create(titleVO, descriptionVO)
+        return repository.save(newTask)
     }
 }

@@ -1,7 +1,10 @@
 package com.example.infrastructure
 
 import com.example.domain.Task
+import com.example.domain.TaskDescription
+import com.example.domain.TaskId
 import com.example.domain.TaskRepository
+import com.example.domain.TaskTitle
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -11,7 +14,7 @@ import org.jetbrains.exposed.v1.jdbc.update
 import java.time.Instant
 
 class ExposedTaskRepository : TaskRepository {
-    override fun insert(title: String, description: String, updatedAt: String): Int {
+    override fun save(task: Task): Int {
         return transaction {
             TaskTbl.insert {
                 it[TaskTbl.title] = title
@@ -24,9 +27,9 @@ class ExposedTaskRepository : TaskRepository {
         return transaction {
             TaskTbl.selectAll().where { TaskTbl.id eq id }.map { row ->
                 Task(
-                    id = row[TaskTbl.id],
-                    title = row[TaskTbl.title],
-                    description = row[TaskTbl.description],
+                    id = TaskId( row[TaskTbl.id]),
+                    title = TaskTitle(row[TaskTbl.title]),
+                    description = TaskDescription(row[TaskTbl.description]),
                     updatedAt = row[TaskTbl.updatedAt],
                     isCompleted = row[TaskTbl.isCompleted],
                 )
@@ -40,9 +43,9 @@ class ExposedTaskRepository : TaskRepository {
                 .offset(offset)
                 .map { row ->
                     Task(
-                        id = row[TaskTbl.id],
-                        title = row[TaskTbl.title],
-                        description = row[TaskTbl.description],
+                        id = TaskId( row[TaskTbl.id]),
+                        title = TaskTitle( row[TaskTbl.title]),
+                        description = TaskDescription( row[TaskTbl.description]),
                         updatedAt = row[TaskTbl.updatedAt],
                         isCompleted = row[TaskTbl.isCompleted],
                     )
@@ -55,13 +58,13 @@ class ExposedTaskRepository : TaskRepository {
         }
     }
 
-    override fun update(id: Int, title: String, description: String, updatedAt: String, isCompleted: Boolean): Boolean {
+    override fun update(task: Task): Boolean {
         return transaction {
-            val updatedRowCount = TaskTbl.update({ TaskTbl.id eq id }) {
+            val updatedRowCount = TaskTbl.update({ TaskTbl.id eq task.id.value }) {
                 it[TaskTbl.title] = title
                 it[TaskTbl.description] = description
                 it[TaskTbl.updatedAt] = Instant.now()
-                it[TaskTbl.isCompleted] = isCompleted
+                it[TaskTbl.isCompleted] =isCompleted
             }
             updatedRowCount > 0 //The return
         }
