@@ -1,5 +1,6 @@
 package com.example.domain
 
+import com.example.domain.valueobjects.TaskDescription
 import com.example.domain.valueobjects.TaskId
 import com.example.domain.valueobjects.TaskTitle
 import java.time.Instant

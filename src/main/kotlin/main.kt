@@ -60,6 +60,3 @@ fun main(args : Array<String>) {
     }.start(wait = true)
 }
 
-
-// 1. Define value objects to check the data in the domain BEFORE checking it in the DB and other layers
-// 2. Take out the transactions and create use cases

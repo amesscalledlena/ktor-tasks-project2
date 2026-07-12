@@ -53,7 +53,7 @@ fun Application.configureRouting() {
                 val query = PaginatedTasksQuery(limit, page)
                 val allTasks = getPaginatedHandler.execute(query)
                 val webResponse = PaginatedResponse(
-                    data = allTasks.tasks.map { TaskCreate(it.title.value, it.description) },
+                    data = allTasks.tasks.map { TaskCreate(it.title.value, it.description.value) },
                     totalItems = allTasks.totalItems,
                     totalPages = allTasks.totalPages,
                     currentPage = allTasks.currentPage
@@ -71,7 +71,7 @@ fun Application.configureRouting() {
                 if (task != null) {
                     val webResponse = TaskCreate(
                         title = task.title.value,
-                        description = task.description,
+                        description = task.description.value,
                     )
                     call.respond(HttpStatusCode.OK, webResponse)
                 }else{

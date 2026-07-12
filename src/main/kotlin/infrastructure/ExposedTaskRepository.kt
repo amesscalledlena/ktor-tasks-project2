@@ -1,10 +1,10 @@
 package com.example.infrastructure
 
 import com.example.domain.Task
-import com.example.domain.TaskDescription
-import com.example.domain.TaskId
 import com.example.domain.TaskRepository
-import com.example.domain.TaskTitle
+import com.example.domain.valueobjects.TaskDescription
+import com.example.domain.valueobjects.TaskId
+import com.example.domain.valueobjects.TaskTitle
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -27,7 +27,7 @@ class ExposedTaskRepository : TaskRepository {
         return transaction {
             TaskTbl.selectAll().where { TaskTbl.id eq id }.map { row ->
                 Task(
-                    id = TaskId( row[TaskTbl.id]),
+                    id = TaskId(row[TaskTbl.id]),
                     title = TaskTitle(row[TaskTbl.title]),
                     description = TaskDescription(row[TaskTbl.description]),
                     updatedAt = row[TaskTbl.updatedAt],
