@@ -1,9 +1,8 @@
 package com.example.application.commands
 
-import com.example.domain.TaskDescription
 import com.example.domain.TaskRepository
-import com.example.domain.TaskTitle
-import java.time.Instant
+import com.example.domain.valueobjects.TaskDescription
+import com.example.domain.valueobjects.TaskTitle
 
 class  UpdateTaskCommandHandler(private val repository: TaskRepository) {
     fun execute(command: UpdateTaskCommand): Boolean {

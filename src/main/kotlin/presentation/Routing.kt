@@ -18,6 +18,12 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
+import com.example.domain.valueobjects.PageRequest
+import com.example.domain.valueobjects.TaskDescription
+import com.example.domain.valueobjects.TaskTitle
+import com.example.domain.valueobjects.TaskId
+
+
 
 fun Application.configureRouting() {
     val taskRepository = ExposedTaskRepository()
@@ -45,9 +51,9 @@ fun Application.configureRouting() {
                 val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
 
                 val query = PaginatedTasksQuery(limit, page)
-                val allTasks = getPaginatedHandler.handle(query)
+                val allTasks = getPaginatedHandler.execute(query)
                 val webResponse = PaginatedResponse(
-                    data = allTasks.tasks.map { TaskCreate(it.title.value, it.description.value) },
+                    data = allTasks.tasks.map { TaskCreate(it.title.value, it.description) },
                     totalItems = allTasks.totalItems,
                     totalPages = allTasks.totalPages,
                     currentPage = allTasks.currentPage
@@ -61,11 +67,11 @@ fun Application.configureRouting() {
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
 
                 val query = GetTaskQuery(taskId)
-                val task = getTaskHandler.handle(query)
+                val task = getTaskHandler.execute(query)
                 if (task != null) {
                     val webResponse = TaskCreate(
                         title = task.title.value,
-                        description = task.description.value,
+                        description = task.description,
                     )
                     call.respond(HttpStatusCode.OK, webResponse)
                 }else{

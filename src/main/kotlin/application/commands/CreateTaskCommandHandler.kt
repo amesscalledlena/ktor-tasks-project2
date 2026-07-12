@@ -1,9 +1,9 @@
 package com.example.application.commands
 
 import com.example.domain.Task
-import com.example.domain.TaskDescription
 import com.example.domain.TaskRepository
-import com.example.domain.TaskTitle
+import com.example.domain.valueobjects.TaskDescription
+import com.example.domain.valueobjects.TaskTitle
 
 class CreateTaskCommandHandler(
     private val repository: TaskRepository

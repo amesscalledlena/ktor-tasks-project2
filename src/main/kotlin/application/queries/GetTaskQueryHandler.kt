@@ -4,7 +4,7 @@ import com.example.domain.Task
 import com.example.domain.TaskRepository
 
 class GetTaskQueryHandler(private val repository: TaskRepository) {
-    fun handle(query: GetTaskQuery): Task? {
+    fun execute(query: GetTaskQuery): Task? {
         return repository.findById(query.id)
     }
 }
