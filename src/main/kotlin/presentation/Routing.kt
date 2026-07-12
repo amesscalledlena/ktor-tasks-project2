@@ -1,6 +1,16 @@
 package com.example.presentation
 
 import com.example.application.*
+import com.example.application.commands.CreateTaskCommand
+import com.example.application.commands.CreateTaskCommandHandler
+import com.example.application.commands.DeleteTaskCommand
+import com.example.application.commands.DeleteTaskCommandHandler
+import com.example.application.commands.UpdateTaskCommand
+import com.example.application.commands.UpdateTaskCommandHandler
+import com.example.application.queries.GetTaskQuery
+import com.example.application.queries.GetTaskQueryHandler
+import com.example.application.queries.PaginatedTasksQuery
+import com.example.application.queries.PaginatedTasksQueryHandler
 import com.example.infrastructure.ExposedTaskRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -63,7 +73,12 @@ fun Application.configureRouting() {
             put("/{id}"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
                 val updatedTaskData = call.receive<TaskUpdate>()
-                val command = UpdateTaskCommand(taskId, updatedTaskData.title, updatedTaskData.description, updatedTaskData.isCompleted)
+                val command = UpdateTaskCommand(
+                    taskId,
+                    updatedTaskData.title,
+                    updatedTaskData.description,
+                    updatedTaskData.isCompleted
+                )
                 val updatedTask = updateHandler.handle(command)
 
                 if (updatedTask != null) {

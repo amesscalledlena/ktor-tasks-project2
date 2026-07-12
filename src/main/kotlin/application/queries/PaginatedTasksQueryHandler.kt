@@ -1,19 +1,6 @@
-package com.example.application
+package com.example.application.queries
 
-import com.example.domain.Task
 import com.example.domain.TaskRepository
-
-data class PaginatedTasksQuery(
-    val limit: Int,
-    val page: Int,
-)
-
-data class PaginatedTasksResult(
-    val tasks: List<Task>,
-    val totalItems: Long,
-    val totalPages: Int,
-    val currentPage: Int,
-)
 
 class PaginatedTasksQueryHandler(private val repository: TaskRepository) {
     fun handle(query: PaginatedTasksQuery): PaginatedTasksResult {
@@ -26,13 +13,5 @@ class PaginatedTasksQueryHandler(private val repository: TaskRepository) {
         val tasks = repository.findAllPaginated(safeLimit, offset)
 
         return PaginatedTasksResult(tasks, totalItems, totalPages,safePage)
-    }
-}
-
-data class GetTaskQuery(val id: Int)
-
-class GetTaskQueryHandler(private val repository: TaskRepository) {
-    fun handle(query: GetTaskQuery): Task? {
-        return repository.findById(query.id)
     }
 }
