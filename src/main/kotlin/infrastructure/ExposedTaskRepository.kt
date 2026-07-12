@@ -16,7 +16,7 @@ class ExposedTaskRepository : TaskRepository {
             TaskTbl.insert {
                 it[TaskTbl.title] = title
                 it[TaskTbl.description] = description
-                it[TaskTbl.updatedAt] = Instant.now().toString()
+                it[TaskTbl.updatedAt] = Instant.now()
             } get TaskTbl.id
         }
     }
@@ -27,7 +27,7 @@ class ExposedTaskRepository : TaskRepository {
                     id = row[TaskTbl.id],
                     title = row[TaskTbl.title],
                     description = row[TaskTbl.description],
-                    updatedAt = row[TaskTbl.updatedAt].toString(),
+                    updatedAt = row[TaskTbl.updatedAt],
                     isCompleted = row[TaskTbl.isCompleted],
                 )
             }.singleOrNull()
@@ -43,7 +43,7 @@ class ExposedTaskRepository : TaskRepository {
                         id = row[TaskTbl.id],
                         title = row[TaskTbl.title],
                         description = row[TaskTbl.description],
-                        updatedAt = row[TaskTbl.updatedAt].toString(),
+                        updatedAt = row[TaskTbl.updatedAt],
                         isCompleted = row[TaskTbl.isCompleted],
                     )
                 }
@@ -60,7 +60,7 @@ class ExposedTaskRepository : TaskRepository {
             val updatedRowCount = TaskTbl.update({ TaskTbl.id eq id }) {
                 it[TaskTbl.title] = title
                 it[TaskTbl.description] = description
-                it[TaskTbl.updatedAt] = Instant.now().toString()
+                it[TaskTbl.updatedAt] = Instant.now()
                 it[TaskTbl.isCompleted] = isCompleted
             }
             updatedRowCount > 0 //The return
