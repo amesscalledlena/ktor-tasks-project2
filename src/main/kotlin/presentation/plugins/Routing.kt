@@ -95,7 +95,7 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.NotFound)
                 }
             }
-            patch("/complete"){
+            patch("/{id}/complete"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@patch call.respond(HttpStatusCode.BadRequest)
                 val command = CompleteTaskCommand(taskId)
                 val completedTask = completeHandler.execute(command)

@@ -10,7 +10,7 @@ class Task(
     var title: TaskTitle,
     var description: TaskDescription,
     var updatedAt: Instant?,
-    var isCompleted: Boolean?
+    var isCompleted: Boolean
 ) {
     companion object {
         fun create(

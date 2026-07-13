@@ -1,7 +1,7 @@
 package com.example.infrastructure.repositories
 
 import com.example.domain.entities.Task
-import com.example.domain.repository.TaskRepository
+import com.example.domain.interfaces.TaskRepository
 import com.example.domain.valueobjects.TaskDescription
 import com.example.domain.valueobjects.TaskId
 import com.example.domain.valueobjects.TaskTitle
@@ -16,11 +16,12 @@ import java.time.Instant
 class ExposedTaskRepository : TaskRepository {
     override fun save(task: Task): Int {
         return TaskTbl.insert {
-                it[TaskTbl.title] = task.title.value
-                it[TaskTbl.description] = task.description.value
-                it[TaskTbl.updatedAt] = Instant.now()
-            } get TaskTbl.id
+            it[TaskTbl.title] = task.title.value
+            it[TaskTbl.description] = task.description.value
+            it[TaskTbl.updatedAt] = Instant.now()
+        } get TaskTbl.id
     }
+
     override fun findById(id: Int): Task? {
         return TaskTbl.selectAll().where { TaskTbl.id eq id }.map { row ->
             Task(
@@ -30,39 +31,34 @@ class ExposedTaskRepository : TaskRepository {
                 updatedAt = row[TaskTbl.updatedAt],
                 isCompleted = row[TaskTbl.isCompleted],
             )
-            }.singleOrNull()
+        }.singleOrNull()
     }
+
     override fun findAllPaginated(limit: Int, offset: Long): List<Task> {
         return TaskTbl.selectAll()
-                .limit(limit)
-                .offset(offset)
-                .map { row ->
-                    Task(
-                        id = TaskId(row[TaskTbl.id]),
-                        title = TaskTitle(row[TaskTbl.title]),
-                        description = TaskDescription(row[TaskTbl.description]),
-                        updatedAt = row[TaskTbl.updatedAt],
-                        isCompleted = row[TaskTbl.isCompleted],
-                    )
-                }
+            .limit(limit)
+            .offset(offset)
+            .map { row ->
+                Task(
+                    id = TaskId(row[TaskTbl.id]),
+                    title = TaskTitle(row[TaskTbl.title]),
+                    description = TaskDescription(row[TaskTbl.description]),
+                    updatedAt = row[TaskTbl.updatedAt],
+                    isCompleted = row[TaskTbl.isCompleted],
+                )
+            }
     }
+
     override fun count(): Long {
         return TaskTbl.selectAll().count()
     }
 
     override fun update(task: Task): Boolean {
         val updatedRowCount = TaskTbl.update({ TaskTbl.id eq task.id.value }) {
-                it[TaskTbl.title] = title
-                it[TaskTbl.description] = description
-                it[TaskTbl.updatedAt] = Instant.now()
-                it[TaskTbl.isCompleted] =isCompleted
-            }
-        return updatedRowCount > 0
-    }
-
-    override fun complete(task: Task): Boolean {
-        val updatedRowCount = TaskTbl.update({ TaskTbl.id eq task.id.value }) {
-            it[TaskTbl.isCompleted] = true
+            it[TaskTbl.title] = task.title.value
+            it[TaskTbl.description] = task.description.value
+            it[TaskTbl.updatedAt] = task.updatedAt ?: Instant.now()
+            it[TaskTbl.isCompleted] = task.isCompleted
         }
         return updatedRowCount > 0
     }
@@ -70,5 +66,5 @@ class ExposedTaskRepository : TaskRepository {
     override fun delete(id: Int): Boolean {
         val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id }
         return deletedRowCount > 0
-        }
+    }
 }

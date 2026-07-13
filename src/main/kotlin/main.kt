@@ -60,8 +60,8 @@ fun main(args : Array<String>) {
     }.start(wait = true)
 }
 
-// 1. TODO: Fix the task created twice bug (Routing: Line 71) ✅
+// 1. TODO: Double task creation (Routing: Line 71) ✅
 // 2. TODO: Clean up the packages ✅
-// 3. TODO: Use complete from domain
+// 3. TODO: Use complete from domain ✅
 // 4. TODO: Take transactions to use cases ✅
 // 5. TODO: Read about railway and use it in the use cases
