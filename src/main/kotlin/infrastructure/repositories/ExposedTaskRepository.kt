@@ -60,6 +60,13 @@ class ExposedTaskRepository : TaskRepository {
         return updatedRowCount > 0
     }
 
+    override fun complete(task: Task): Boolean {
+        val updatedRowCount = TaskTbl.update({ TaskTbl.id eq task.id.value }) {
+            it[TaskTbl.isCompleted] = true
+        }
+        return updatedRowCount > 0
+    }
+
     override fun delete(id: Int): Boolean {
         val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id }
         return deletedRowCount > 0

@@ -8,5 +8,6 @@ interface TaskRepository {
     fun findAllPaginated(limit: Int, offset: Long): List<Task>
     fun count(): Long
     fun update(task: Task): Boolean
+    fun complete(task: Task): Boolean
     fun delete(id: Int): Boolean
 }

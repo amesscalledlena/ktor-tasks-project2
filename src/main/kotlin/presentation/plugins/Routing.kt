@@ -1,11 +1,13 @@
 package com.example.presentation.plugins
 
+import com.example.application.commands.handlers.CompleteTaskCommandHandler
 import com.example.application.commands.models.CreateTaskCommand
 import com.example.application.commands.handlers.CreateTaskCommandHandler
 import com.example.application.commands.models.DeleteTaskCommand
 import com.example.application.commands.handlers.DeleteTaskCommandHandler
 import com.example.application.commands.models.UpdateTaskCommand
 import com.example.application.commands.handlers.UpdateTaskCommandHandler
+import com.example.application.commands.models.CompleteTaskCommand
 import com.example.application.queries.models.GetTaskQuery
 import com.example.application.queries.handlers.GetTaskQueryHandler
 import com.example.application.queries.models.PaginatedTasksQuery
@@ -30,6 +32,7 @@ fun Application.configureRouting() {
     val deleteHandler = DeleteTaskCommandHandler(taskRepository)
     val getPaginatedHandler = PaginatedTasksQueryHandler(taskRepository)
     val getTaskHandler = GetTaskQueryHandler(taskRepository)
+    val completeHandler = CompleteTaskCommandHandler(taskRepository)
 
     routing {
         swaggerUI(
@@ -83,7 +86,6 @@ fun Application.configureRouting() {
                     taskId,
                     updatedTaskData.title,
                     updatedTaskData.description,
-                    updatedTaskData.isCompleted
                 )
                 val updatedTask = updateHandler.execute(command)
 
@@ -93,6 +95,17 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.NotFound)
                 }
             }
+            patch("/complete"){
+                val taskId = call.parameters["id"]?.toIntOrNull() ?: return@patch call.respond(HttpStatusCode.BadRequest)
+                val command = CompleteTaskCommand(taskId)
+                val completedTask = completeHandler.execute(command)
+                if (completedTask) {
+                    call.respond(HttpStatusCode.OK, "Task marked as completed")
+                }else{
+                    call.respond(HttpStatusCode.NotFound)
+                }
+            }
+
             //DELETE
             delete("/{id}") {
                 val taskId =
