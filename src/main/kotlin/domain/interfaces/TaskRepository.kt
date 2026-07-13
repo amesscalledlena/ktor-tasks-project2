@@ -1,4 +1,6 @@
-package com.example.domain
+package com.example.domain.repository
+
+import com.example.domain.entities.Task
 
 interface TaskRepository {
     fun save(task: Task): Int

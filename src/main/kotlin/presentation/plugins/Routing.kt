@@ -1,16 +1,19 @@
-package com.example.presentation
+package com.example.presentation.plugins
 
-import com.example.application.commands.CreateTaskCommand
-import com.example.application.commands.CreateTaskCommandHandler
-import com.example.application.commands.DeleteTaskCommand
-import com.example.application.commands.DeleteTaskCommandHandler
-import com.example.application.commands.UpdateTaskCommand
-import com.example.application.commands.UpdateTaskCommandHandler
-import com.example.application.queries.GetTaskQuery
-import com.example.application.queries.GetTaskQueryHandler
-import com.example.application.queries.PaginatedTasksQuery
-import com.example.application.queries.PaginatedTasksQueryHandler
-import com.example.infrastructure.ExposedTaskRepository
+import com.example.application.commands.models.CreateTaskCommand
+import com.example.application.commands.handlers.CreateTaskCommandHandler
+import com.example.application.commands.models.DeleteTaskCommand
+import com.example.application.commands.handlers.DeleteTaskCommandHandler
+import com.example.application.commands.models.UpdateTaskCommand
+import com.example.application.commands.handlers.UpdateTaskCommandHandler
+import com.example.application.queries.models.GetTaskQuery
+import com.example.application.queries.handlers.GetTaskQueryHandler
+import com.example.application.queries.models.PaginatedTasksQuery
+import com.example.application.queries.handlers.PaginatedTasksQueryHandler
+import com.example.infrastructure.repositories.ExposedTaskRepository
+import com.example.presentation.dtos.PaginatedResponse
+import com.example.presentation.dtos.TaskResponse
+import com.example.presentation.dtos.TaskUpdate
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.swagger.*
@@ -50,7 +53,7 @@ fun Application.configureRouting() {
                 val query = PaginatedTasksQuery(limit = limit, page = page)
                 val allTasks = getPaginatedHandler.execute(query)
                 val webResponse = PaginatedResponse(
-                    data = allTasks.tasks.map {TaskResponse.fromDto(it) },
+                    data = allTasks.tasks.map { TaskResponse.fromDto(it) },
                     totalItems = allTasks.totalItems,
                     totalPages = allTasks.totalPages,
                     currentPage = allTasks.currentPage

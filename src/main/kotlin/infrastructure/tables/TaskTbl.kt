@@ -1,8 +1,7 @@
-package com.example.infrastructure
+package com.example.infrastructure.tables
 
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.javatime.timestamp
-
 
 object TaskTbl : Table() {
     val id = integer("id").autoIncrement()

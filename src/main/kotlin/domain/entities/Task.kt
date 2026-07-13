@@ -1,4 +1,4 @@
-package com.example.domain
+package com.example.domain.entities
 
 import com.example.domain.valueobjects.TaskDescription
 import com.example.domain.valueobjects.TaskId
@@ -37,4 +37,3 @@ class Task(
         this.description = description
     }
 }
-

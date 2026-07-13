@@ -1,6 +1,6 @@
-package com.example.presentation
+package com.example.presentation.dtos
 
-import com.example.domain.Task
+import com.example.domain.entities.Task
 import kotlinx.serialization.Serializable
 
 @Serializable

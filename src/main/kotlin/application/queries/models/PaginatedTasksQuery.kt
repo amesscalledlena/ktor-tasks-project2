@@ -1,4 +1,4 @@
-package com.example.application.queries
+package com.example.application.queries.models
 
 data class PaginatedTasksQuery(
     val limit: Int,

@@ -1,8 +1,8 @@
 package com.example
 
-import com.example.infrastructure.TaskTbl
-import com.example.presentation.configureRouting
-import com.example.presentation.configureSerialization
+import com.example.infrastructure.tables.TaskTbl
+import com.example.presentation.plugins.configureRouting
+import com.example.presentation.plugins.configureSerialization
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
@@ -61,7 +61,7 @@ fun main(args : Array<String>) {
 }
 
 // 1. TODO: Fix the task created twice bug (Routing: Line 71) ✅
-// 2. TODO: Clean up the packages
+// 2. TODO: Clean up the packages ✅
 // 3. TODO: Use complete from domain
-// 4. TODO: Take transactions to use cases
+// 4. TODO: Take transactions to use cases ✅
 // 5. TODO: Read about railway and use it in the use cases

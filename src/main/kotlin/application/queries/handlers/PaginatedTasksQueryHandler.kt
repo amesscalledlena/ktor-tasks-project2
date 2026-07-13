@@ -1,11 +1,13 @@
-package com.example.application.queries
+package com.example.application.queries.handlers
 
-import com.example.domain.TaskRepository
+import com.example.application.queries.models.PaginatedTasksQuery
+import com.example.application.queries.models.PaginatedTasksResultQuery
+import com.example.domain.repository.TaskRepository
 import com.example.domain.valueobjects.PageRequest
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class PaginatedTasksQueryHandler(private val repository: TaskRepository) {
-    fun execute(query: PaginatedTasksQuery): PaginatedTasksResult {
+    fun execute(query: PaginatedTasksQuery): PaginatedTasksResultQuery {
         return transaction {
             val pageReq = PageRequest(query.page, query.limit)
             val totalItems = repository.count()
@@ -13,7 +15,7 @@ class PaginatedTasksQueryHandler(private val repository: TaskRepository) {
             val currentPage = pageReq.safePage
             val tasks = repository.findAllPaginated(pageReq.safeLimit, pageReq.offset)
 
-            PaginatedTasksResult(
+            PaginatedTasksResultQuery(
                 tasks = tasks,
                 totalItems = totalItems,
                 totalPages = totalPages,

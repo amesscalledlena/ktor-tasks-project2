@@ -1,4 +1,4 @@
-package com.example.application.commands
+package com.example.application.commands.models
 
 data class CreateTaskCommand(
     val title: String,

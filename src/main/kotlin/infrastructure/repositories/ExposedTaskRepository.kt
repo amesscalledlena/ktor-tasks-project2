@@ -1,15 +1,15 @@
-package com.example.infrastructure
+package com.example.infrastructure.repositories
 
-import com.example.domain.Task
-import com.example.domain.TaskRepository
+import com.example.domain.entities.Task
+import com.example.domain.repository.TaskRepository
 import com.example.domain.valueobjects.TaskDescription
 import com.example.domain.valueobjects.TaskId
 import com.example.domain.valueobjects.TaskTitle
+import com.example.infrastructure.tables.TaskTbl
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
 import java.time.Instant
 
@@ -23,13 +23,13 @@ class ExposedTaskRepository : TaskRepository {
     }
     override fun findById(id: Int): Task? {
         return TaskTbl.selectAll().where { TaskTbl.id eq id }.map { row ->
-                Task(
-                    id = TaskId(row[TaskTbl.id]),
-                    title = TaskTitle(row[TaskTbl.title]),
-                    description = TaskDescription(row[TaskTbl.description]),
-                    updatedAt = row[TaskTbl.updatedAt],
-                    isCompleted = row[TaskTbl.isCompleted],
-                )
+            Task(
+                id = TaskId(row[TaskTbl.id]),
+                title = TaskTitle(row[TaskTbl.title]),
+                description = TaskDescription(row[TaskTbl.description]),
+                updatedAt = row[TaskTbl.updatedAt],
+                isCompleted = row[TaskTbl.isCompleted],
+            )
             }.singleOrNull()
     }
     override fun findAllPaginated(limit: Int, offset: Long): List<Task> {
@@ -38,9 +38,9 @@ class ExposedTaskRepository : TaskRepository {
                 .offset(offset)
                 .map { row ->
                     Task(
-                        id = TaskId( row[TaskTbl.id]),
-                        title = TaskTitle( row[TaskTbl.title]),
-                        description = TaskDescription( row[TaskTbl.description]),
+                        id = TaskId(row[TaskTbl.id]),
+                        title = TaskTitle(row[TaskTbl.title]),
+                        description = TaskDescription(row[TaskTbl.description]),
                         updatedAt = row[TaskTbl.updatedAt],
                         isCompleted = row[TaskTbl.isCompleted],
                     )
