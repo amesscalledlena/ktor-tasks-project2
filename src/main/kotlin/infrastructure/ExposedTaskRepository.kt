@@ -15,17 +15,14 @@ import java.time.Instant
 
 class ExposedTaskRepository : TaskRepository {
     override fun save(task: Task): Int {
-        return transaction {
-            TaskTbl.insert {
-                it[TaskTbl.title] = title
-                it[TaskTbl.description] = description
+        return TaskTbl.insert {
+                it[TaskTbl.title] = task.title.value
+                it[TaskTbl.description] = task.description.value
                 it[TaskTbl.updatedAt] = Instant.now()
             } get TaskTbl.id
-        }
     }
     override fun findById(id: Int): Task? {
-        return transaction {
-            TaskTbl.selectAll().where { TaskTbl.id eq id }.map { row ->
+        return TaskTbl.selectAll().where { TaskTbl.id eq id }.map { row ->
                 Task(
                     id = TaskId(row[TaskTbl.id]),
                     title = TaskTitle(row[TaskTbl.title]),
@@ -34,11 +31,9 @@ class ExposedTaskRepository : TaskRepository {
                     isCompleted = row[TaskTbl.isCompleted],
                 )
             }.singleOrNull()
-        }
     }
     override fun findAllPaginated(limit: Int, offset: Long): List<Task> {
-        return transaction {
-            TaskTbl.selectAll()
+        return TaskTbl.selectAll()
                 .limit(limit)
                 .offset(offset)
                 .map { row ->
@@ -50,30 +45,23 @@ class ExposedTaskRepository : TaskRepository {
                         isCompleted = row[TaskTbl.isCompleted],
                     )
                 }
-        }
     }
     override fun count(): Long {
-        return transaction {
-            TaskTbl.selectAll().count()
-        }
+        return TaskTbl.selectAll().count()
     }
 
     override fun update(task: Task): Boolean {
-        return transaction {
-            val updatedRowCount = TaskTbl.update({ TaskTbl.id eq task.id.value }) {
+        val updatedRowCount = TaskTbl.update({ TaskTbl.id eq task.id.value }) {
                 it[TaskTbl.title] = title
                 it[TaskTbl.description] = description
                 it[TaskTbl.updatedAt] = Instant.now()
                 it[TaskTbl.isCompleted] =isCompleted
             }
-            updatedRowCount > 0 //The return
-        }
+        return updatedRowCount > 0
     }
 
     override fun delete(id: Int): Boolean {
-        return transaction {
-            val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id }
-            deletedRowCount > 0 //The return
+        val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id }
+        return deletedRowCount > 0
         }
-    }
 }
