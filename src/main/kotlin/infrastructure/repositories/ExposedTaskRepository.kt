@@ -25,9 +25,9 @@ class ExposedTaskRepository : TaskRepository {
     override fun findById(id: Int): Task? {
         return TaskTbl.selectAll().where { TaskTbl.id eq id }.map { row ->
             Task(
-                id = TaskId(row[TaskTbl.id]),
-                title = TaskTitle(row[TaskTbl.title]),
-                description = TaskDescription(row[TaskTbl.description]),
+                id = TaskId.fromDatabase(row[TaskTbl.id]),
+                title = TaskTitle.fromDatabase(row[TaskTbl.title]),
+                description = TaskDescription.fromDatabase(row[TaskTbl.description]),
                 updatedAt = row[TaskTbl.updatedAt],
                 isCompleted = row[TaskTbl.isCompleted],
             )
@@ -40,9 +40,9 @@ class ExposedTaskRepository : TaskRepository {
             .offset(offset)
             .map { row ->
                 Task(
-                    id = TaskId(row[TaskTbl.id]),
-                    title = TaskTitle(row[TaskTbl.title]),
-                    description = TaskDescription(row[TaskTbl.description]),
+                    id = TaskId.fromDatabase(row[TaskTbl.id]),
+                    title = TaskTitle.fromDatabase(row[TaskTbl.title]),
+                    description = TaskDescription.fromDatabase(row[TaskTbl.description]),
                     updatedAt = row[TaskTbl.updatedAt],
                     isCompleted = row[TaskTbl.isCompleted],
                 )

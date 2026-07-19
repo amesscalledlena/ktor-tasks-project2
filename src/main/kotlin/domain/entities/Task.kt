@@ -18,9 +18,9 @@ class Task(
             description: TaskDescription
         ): Task {
             return Task(
-                id = TaskId(0),
+                id = TaskId.fromDatabase(0),
                 title = title,
-                description = TaskDescription(description.toString()),
+                description = TaskDescription.fromDatabase(description.toString()),
                 updatedAt = Instant.now(),
                 isCompleted = false,
             )
@@ -32,7 +32,10 @@ class Task(
         this.updatedAt = updatedAt
     }
 
-    fun update(title: TaskTitle, description: TaskDescription,) {
+    fun update(
+        title: TaskTitle,
+        description: TaskDescription
+    ){
         this.title = title
         this.description = description
     }

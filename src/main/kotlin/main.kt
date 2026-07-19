@@ -64,4 +64,4 @@ fun main(args : Array<String>) {
 // 2. TODO: Clean up the packages ✅
 // 3. TODO: Use complete from domain ✅
 // 4. TODO: Take transactions to use cases ✅
-// 5. TODO: Read about railway and use it in the use cases
+// 5. TODO: Read about railway and use it in the use cases ✅
