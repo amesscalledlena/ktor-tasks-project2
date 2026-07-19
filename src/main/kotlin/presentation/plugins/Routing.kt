@@ -54,28 +54,31 @@ fun Application.configureRouting() {
                 val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
 
                 val query = PaginatedTasksQuery(limit = limit, page = page)
-                val allTasks = getPaginatedHandler.execute(query)
-                val webResponse = PaginatedResponse(
-                    data = allTasks.tasks.map { TaskResponse.fromDto(it) },
-                    totalItems = allTasks.totalItems,
-                    totalPages = allTasks.totalPages,
-                    currentPage = allTasks.currentPage
-                )
+                val result = getPaginatedHandler.execute(query)
 
-                call.respond(HttpStatusCode.OK, webResponse)
-                //call.respond(HttpStatusCode.OK, allTasks)
+                result.onSuccess { paginatedResult ->
+                    val response =  PaginatedResponse(
+                        data = paginatedResult.tasks.map { TaskResponse.fromDto(it) },
+                        totalItems = paginatedResult.totalItems,
+                        totalPages = paginatedResult.totalPages,
+                        currentPage = paginatedResult.currentPage
+                    )
+                    call.respond(HttpStatusCode.OK, response)
+                }.onFailure { exception ->
+                    call.respond(HttpStatusCode.BadRequest, exception.message ?: "Failed to fetch tasks")
+                }
             }
             //READ ONE
             get("/{id}") {
                 val taskId = call.parameters["id"]!!.toInt()
 
                 val query = GetTaskQuery(taskId)
-                val task = getTaskHandler.execute(query)
-                if (task != null) {
-                    val webResponse = TaskResponse.fromDto(task)
-                    call.respond(HttpStatusCode.OK, webResponse)
-                } else {
-                    call.respond(HttpStatusCode.NotFound)
+                val result = getTaskHandler.execute(query)
+
+                result.onSuccess {task ->
+                    call.respond(HttpStatusCode.OK, TaskResponse.fromDto(task!!))
+                }.onFailure {exception ->
+                    call.respond(HttpStatusCode.NotFound, exception.message ?: "Task not found")
                 }
             }
             //UPDATE
@@ -87,22 +90,31 @@ fun Application.configureRouting() {
                     updatedTaskData.title,
                     updatedTaskData.description,
                 )
-                val updatedTask = updateHandler.execute(command)
+                val updatedTask = updateHandler.execute(command) // This is now a Result<boolean> wrapper
 
-                if (updatedTask) {
-                    call.respond(HttpStatusCode.OK, updatedTask)
-                } else {
-                    call.respond(HttpStatusCode.NotFound)
+                updatedTask.onSuccess { isUpdated ->
+                    if (isUpdated) {
+                        call.respond(HttpStatusCode.OK, updatedTaskData)
+                    }else{
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                }.onFailure { exception ->
+                    call.respond(HttpStatusCode.BadRequest, exception.message ?: "Invalid update data") // VO threw an error
                 }
+
             }
             patch("/{id}/complete"){
                 val taskId = call.parameters["id"]?.toIntOrNull() ?: return@patch call.respond(HttpStatusCode.BadRequest)
                 val command = CompleteTaskCommand(taskId)
-                val completedTask = completeHandler.execute(command)
-                if (completedTask) {
-                    call.respond(HttpStatusCode.OK, "Task marked as completed")
-                }else{
-                    call.respond(HttpStatusCode.NotFound)
+                val result = completeHandler.execute(command)
+                result.onSuccess { completed ->
+                    if (completed) {
+                        call.respond(HttpStatusCode.OK, "Task marked as completed")
+                    }else{
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                }.onFailure { exception ->
+                    call.respond(HttpStatusCode.NotFound, exception.message ?: "Task not found")
                 }
             }
 
@@ -111,13 +123,17 @@ fun Application.configureRouting() {
                 val taskId =
                     call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
                 val command = DeleteTaskCommand(taskId)
-                val deletedTaskResult = deleteHandler.execute(command)
-                if (deletedTaskResult) {
-                    call.respond(HttpStatusCode.OK, deletedTaskResult)
-                } else {
-                    call.respond(HttpStatusCode.NotFound)
+                val result = deleteHandler.execute(command)
+                result.onSuccess { deleted ->
+                    if (deleted) {
+                        call.respond(HttpStatusCode.OK, "Task deleted successfully")
+                    } else {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                }.onFailure { exception ->
+                    call.respond(HttpStatusCode.BadRequest, exception.message ?: "Failed to delete task")
+                }
                 }
             }
         }
     }
-}

@@ -9,7 +9,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 class PaginatedTasksQueryHandler(private val repository: TaskRepository) {
     fun execute(query: PaginatedTasksQuery): Result<PaginatedTasksResultQuery> {
         return transaction {
-            runCatching {
+            val result = runCatching {
                 val pageReq = PageRequest(query.page, query.limit)
                 val totalItems = repository.count()
                 val totalPages = pageReq.calculateTotalPages(totalItems)
@@ -22,6 +22,9 @@ class PaginatedTasksQueryHandler(private val repository: TaskRepository) {
                     totalPages = totalPages,
                     currentPage = currentPage
                 )
+            }
+            result.onFailure {
+                rollback()
             }
         }
     }

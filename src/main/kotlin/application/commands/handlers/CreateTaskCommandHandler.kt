@@ -12,11 +12,14 @@ class CreateTaskCommandHandler(
 ) {
     fun execute(command: CreateTaskCommand): Result<Int> {
         return transaction {
-            runCatching {
+            val result = runCatching {
                 val titleVO = TaskTitle(command.title)
                 val descriptionVO = TaskDescription(command.description)
                 val newTask = Task.create(title = titleVO, description = descriptionVO)
                 repository.save(newTask)
+            }
+            result.onFailure {
+                rollback()
             }
         }
     }

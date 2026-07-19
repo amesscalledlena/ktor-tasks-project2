@@ -8,13 +8,17 @@ import java.time.Instant
 class CompleteTaskCommandHandler(private val repository: TaskRepository) {
     fun execute(command: CompleteTaskCommand): Result<Boolean> {
         return transaction {
-            runCatching {
+            val result = runCatching {
                 val existingTask = repository.findById(command.id) ?: throw IllegalArgumentException("Task with ID ${command.id} not found")
                 val updateTime = Instant.now()
                 existingTask.complete(updateTime)
                 val isUpdated = repository.update(existingTask)
                 isUpdated
             }
+            result.onFailure {
+                rollback()
+            }
+            result //Wrapped result
         }
     }
 }

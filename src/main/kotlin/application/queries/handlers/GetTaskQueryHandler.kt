@@ -8,8 +8,11 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 class GetTaskQueryHandler(private val repository: TaskRepository) {
     fun execute(query: GetTaskQuery): Result<Task?> {
         return transaction {
-            runCatching {
+            val result = runCatching {
                 repository.findById(query.id)
+            }
+            result.onFailure {
+                rollback()
             }
         }
     }

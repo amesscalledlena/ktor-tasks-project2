@@ -9,9 +9,9 @@ data class TaskResponse(
     val description: String,
 ) {
     companion object {
-        fun fromDto(row: Task) = TaskResponse(
-            title = row.title.value,
-            description = row.description.value
+        fun fromDto(task: Task) = TaskResponse(
+            title = task.title.value,
+            description = task.description.value
         )
     }
 }
