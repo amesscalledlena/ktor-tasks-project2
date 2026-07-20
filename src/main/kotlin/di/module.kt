@@ -2,8 +2,8 @@ package com.example.di
 
 import com.example.application.commands.handlers.*
 import com.example.application.queries.handlers.*
-import com.example.domain.interfaces.TaskRepository
-import com.example.infrastructure.repositories.ExposedTaskRepository
+import com.example.domain.interfaces.*
+import com.example.infrastructure.repositories.*
 import org.koin.dsl.module
 
 val infrastructureModule = module{
@@ -20,4 +20,8 @@ val applicationModule = module {
     // Queries
     single { GetTaskQueryHandler(repository = get()) }
     single{ PaginatedTasksQueryHandler(repository = get() ) }
+}
+
+val eventModule = module {
+    single<EventBus> { InMemoryEventBus() }
 }
