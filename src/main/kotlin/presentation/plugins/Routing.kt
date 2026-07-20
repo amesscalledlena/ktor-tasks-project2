@@ -22,17 +22,18 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.koin.ktor.ext.inject
 
 
 fun Application.configureRouting() {
     val taskRepository = ExposedTaskRepository()
 
-    val createHandler = CreateTaskCommandHandler(taskRepository)
-    val updateHandler = UpdateTaskCommandHandler(taskRepository)
-    val deleteHandler = DeleteTaskCommandHandler(taskRepository)
-    val getPaginatedHandler = PaginatedTasksQueryHandler(taskRepository)
-    val getTaskHandler = GetTaskQueryHandler(taskRepository)
-    val completeHandler = CompleteTaskCommandHandler(taskRepository)
+    val completeHandler by inject<CompleteTaskCommandHandler>()
+    val createHandler by inject<CreateTaskCommandHandler>()
+    val deleteHandler by inject<DeleteTaskCommandHandler>()
+    val updateHandler by inject<UpdateTaskCommandHandler>()
+    val getPaginatedHandler by inject<PaginatedTasksQueryHandler>()
+    val getTaskHandler by inject<GetTaskQueryHandler>()
 
     routing {
         swaggerUI(
@@ -57,7 +58,7 @@ fun Application.configureRouting() {
                 val result = getPaginatedHandler.execute(query)
 
                 result.onSuccess { paginatedResult ->
-                    val response =  PaginatedResponse(
+                    val response = PaginatedResponse(
                         data = paginatedResult.tasks.map { TaskResponse.fromDto(it) },
                         totalItems = paginatedResult.totalItems,
                         totalPages = paginatedResult.totalPages,
@@ -75,9 +76,9 @@ fun Application.configureRouting() {
                 val query = GetTaskQuery(taskId)
                 val result = getTaskHandler.execute(query)
 
-                result.onSuccess {task ->
+                result.onSuccess { task ->
                     call.respond(HttpStatusCode.OK, TaskResponse.fromDto(task!!))
-                }.onFailure {exception ->
+                }.onFailure { exception ->
                     call.respond(HttpStatusCode.NotFound, exception.message ?: "Task not found")
                 }
             }
@@ -95,22 +96,26 @@ fun Application.configureRouting() {
                 updatedTask.onSuccess { isUpdated ->
                     if (isUpdated) {
                         call.respond(HttpStatusCode.OK, updatedTaskData)
-                    }else{
+                    } else {
                         call.respond(HttpStatusCode.NotFound)
                     }
                 }.onFailure { exception ->
-                    call.respond(HttpStatusCode.BadRequest, exception.message ?: "Invalid update data") // VO threw an error
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        exception.message ?: "Invalid update data"
+                    ) // VO threw an error
                 }
 
             }
-            patch("/{id}/complete"){
-                val taskId = call.parameters["id"]?.toIntOrNull() ?: return@patch call.respond(HttpStatusCode.BadRequest)
+            patch("/{id}/complete") {
+                val taskId =
+                    call.parameters["id"]?.toIntOrNull() ?: return@patch call.respond(HttpStatusCode.BadRequest)
                 val command = CompleteTaskCommand(taskId)
                 val result = completeHandler.execute(command)
                 result.onSuccess { completed ->
                     if (completed) {
                         call.respond(HttpStatusCode.OK, "Task marked as completed")
-                    }else{
+                    } else {
                         call.respond(HttpStatusCode.NotFound)
                     }
                 }.onFailure { exception ->
@@ -124,16 +129,18 @@ fun Application.configureRouting() {
                     call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
                 val command = DeleteTaskCommand(taskId)
                 val result = deleteHandler.execute(command)
-                result.onSuccess { deleted ->
-                    if (deleted) {
-                        call.respond(HttpStatusCode.OK, "Task deleted successfully")
-                    } else {
-                        call.respond(HttpStatusCode.NotFound)
+                result
+                    .onSuccess { deleted ->
+                        if (deleted) {
+                            call.respond(HttpStatusCode.OK, "Task deleted successfully")
+                        } else {
+                            call.respond(HttpStatusCode.NotFound)
+                        }
                     }
-                }.onFailure { exception ->
-                    call.respond(HttpStatusCode.BadRequest, exception.message ?: "Failed to delete task")
-                }
-                }
+                    .onFailure { exception ->
+                        call.respond(HttpStatusCode.BadRequest, exception.message ?: "Failed to delete task")
+                    }
             }
         }
     }
+}

@@ -8,6 +8,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import java.time.Instant
 
 class CompleteTaskCommandHandler(private val repository: TaskRepository) {
+
     fun execute(command: CompleteTaskCommand): Result<Boolean, TaskError> {
         val idVO = TaskId.create(command.id)
 

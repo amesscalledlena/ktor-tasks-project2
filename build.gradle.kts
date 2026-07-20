@@ -39,6 +39,9 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
 
+    implementation("io.insert-koin:koin-ktor:3.5.0")
+    implementation("io.insert-koin:koin-logger-slf4j:3.5.0")
+
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
 }
