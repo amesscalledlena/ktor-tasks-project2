@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.UUID
 
 data class TaskDeletedEvent (
-    val taskId: UUID,
+    val taskId: Int,
     override val eventId: UUID = UUID.randomUUID(),
     override val occurredOn: Instant = Instant.now(),
 ): DomainEvent

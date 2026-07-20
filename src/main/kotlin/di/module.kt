@@ -13,10 +13,22 @@ val infrastructureModule = module{
 
 val applicationModule = module {
     // Commands
-    single { CompleteTaskCommandHandler(repository = get()) }
-    single { CreateTaskCommandHandler(repository = get ()) }
-    single { DeleteTaskCommandHandler(repository = get()) }
-    single { UpdateTaskCommandHandler(repository = get()) }
+    single { CompleteTaskCommandHandler(
+        repository = get(),
+        eventBus = get()
+    ) }
+    single { CreateTaskCommandHandler(
+        repository = get(),
+        eventBus =  get()
+    ) }
+    single { DeleteTaskCommandHandler(
+        repository = get(),
+        eventBus = get()
+    ) }
+    single { UpdateTaskCommandHandler(
+        repository = get(),
+        eventBus = get()
+    ) }
     // Queries
     single { GetTaskQueryHandler(repository = get()) }
     single{ PaginatedTasksQueryHandler(repository = get() ) }

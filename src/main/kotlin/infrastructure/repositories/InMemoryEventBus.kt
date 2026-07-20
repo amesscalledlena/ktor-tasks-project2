@@ -4,8 +4,6 @@ import com.example.domain.interfaces.DomainEvent
 import com.example.domain.interfaces.EventBus
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.collect
 
 class InMemoryEventBus: EventBus {
     // A Shared Flow broadcasts the exact same data to multiple listeners at the same time.
@@ -17,12 +15,12 @@ class InMemoryEventBus: EventBus {
         _events.emit(event)
     }
 
-    @Suppress("UNCHECKED_CAST")
+    /*@Suppress("UNCHECKED_CAST")
     override suspend fun <T : DomainEvent> subscribe(eventType: Class<T>, handler: suspend (T) -> Unit) {
         // collect: Keep listening forever
         // @Suppress("UNCHECKED_CAST"): Because we are using Java classes to check types at runtime,
             // Kotlin's strict type checker gets nervous. We know the cast to T is perfectly safe because filterIsInstance already verified it,
             // so we suppress the compiler warning.
         events.filterIsInstance(eventType.kotlin).collect { event -> handler(event as T) }
-    }
+    }*/
 }

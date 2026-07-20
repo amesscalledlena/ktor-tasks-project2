@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.UUID
 
 data class TaskUpdatedEvent (
-    val taskId: UUID,
+    val taskId: Int,
     val taskTitle: String,
     val taskDescription: String,
     override val eventId: UUID = UUID.randomUUID(),
