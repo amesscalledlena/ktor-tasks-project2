@@ -1,40 +1,42 @@
 package com.example.application.commands.handlers
 
 import com.example.application.commands.models.DeleteTaskCommand
-import com.example.domain.events.TaskCompletedEvent
 import com.example.domain.events.TaskDeletedEvent
-import com.example.domain.interfaces.EventBus
+import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
-import com.example.domain.railway.*
+import com.example.domain.railway.Result
+import com.example.domain.railway.TaskError
 import com.example.domain.valueobjects.TaskId
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class  DeleteTaskCommandHandler(
     private val repository: TaskRepository,
-    private val eventBus: EventBus,
+    private val eventStoreRepository: EventStoreRepository,
 ) {
-    suspend fun execute(command: DeleteTaskCommand): Result<Boolean, TaskError> {
+    fun execute(command: DeleteTaskCommand): Result<Boolean, TaskError> {
+        val existingTask = transaction{
+            repository.findById(command.id)
+        }
+
+        if (existingTask == null) {
+            return Result.Success(false)
+        }
+
         val idVO = TaskId.create(command.id)
+            .onFailure {  }.successOrException
 
-        if (idVO.isFailure){
-            return Result.failure(idVO.failureOrException)
-        }
-        val validId = idVO.successOrException.value
 
-        val result= transaction {
-            val wasDeleted = repository.delete(validId)
-            Result.success(wasDeleted)
-        }
+        transaction {
+            repository.delete(idVO.value)
 
-        if (result is Result.Success && result.value) {
-            eventBus.publish(
-                event = TaskDeletedEvent(
-                    taskId = validId,
-                )
+            val event = TaskDeletedEvent(
+                taskId = idVO.value,
             )
+
+            eventStoreRepository.append(event)
         }
 
-        return result
+        return Result.Success(true)
     }
 }
 

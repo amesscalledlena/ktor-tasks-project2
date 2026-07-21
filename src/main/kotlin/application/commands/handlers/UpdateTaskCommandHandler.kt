@@ -1,9 +1,8 @@
 package com.example.application.commands.handlers
 
 import com.example.application.commands.models.UpdateTaskCommand
-import com.example.domain.events.TaskCreatedEvent
 import com.example.domain.events.TaskUpdatedEvent
-import com.example.domain.interfaces.EventBus
+import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.railway.*
 import com.example.domain.railway.Result.Companion.zip
@@ -14,42 +13,48 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class  UpdateTaskCommandHandler(
     private val repository: TaskRepository,
-    private val eventBus: EventBus,
+    private val eventStoreRepository: EventStoreRepository,
     ) {
-    suspend fun execute(command: UpdateTaskCommand): Result<Boolean, TaskError> {
+    fun execute(command: UpdateTaskCommand): Result<Boolean, TaskError> {
         val idVO = TaskId.create(command.id)
         val titleVO = TaskTitle.create(command.title)
         val descriptionVO = TaskDescription.create(command.description)
+
+        val existingTask = transaction {
+            repository.findById(command.id)
+        }
+
+        if (existingTask == null) {
+            return Result.Success(false ) // Exit immediately
+        }
 
         val result = zip(
             a = idVO,
             b = titleVO,
             c = descriptionVO,
             failure = TaskError.InvalidTitle("Multiple validation errors occurred"),
-            mapSuccess = {validId, validTitle, validDesc ->
-                transaction {
-                    val existingTask = repository.findById(validId.value)
-
-                    if (existingTask == null){
-                        false
-                    }else{
-                        existingTask.update(title = validTitle, description = validDesc)
-                        repository.update(existingTask)
-                    }
-                }
-            }
-        )
-
-        if(result is Result.Success && result.value){
-            eventBus.publish(
-                event = TaskUpdatedEvent(
-                    taskId = command.id,
-                    taskTitle = command.title,
-                    taskDescription = command.description,
+            mapSuccess = { validId, validTitle, validDesc ->
+                existingTask.update(
+                    title = validTitle,
+                    description = validDesc,
                 )
+                existingTask
+                }
+        ).onFailure{}.successOrException
+
+        transaction {
+            repository.update(result)
+
+            val event = TaskUpdatedEvent(
+                taskId = result.id.value,
+                taskTitle = result.title.value,
+                taskDescription = result.description.value,
             )
+
+            eventStoreRepository.append(event)
         }
 
-        return result
+
+        return Result.Success(true)
     }
 }

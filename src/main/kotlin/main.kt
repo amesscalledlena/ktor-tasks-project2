@@ -37,3 +37,6 @@ fun main(args : Array<String>) {
 // 5. TODO: Read about railway and use it in the use cases ✅
 // 6. TODO: Clean architecture book (jeldesh lacivert bood)
 // 7. TODO: DDD book
+// 8. TODO: Event saving format + Add JSON column
+// 9. TODO: Add more events if needed
+// 10. TODO: Learn about class/interface generics in kotlin

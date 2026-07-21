@@ -25,18 +25,19 @@ class Task(
                 isCompleted = false,
             )
         }
+
+    }
+
+    fun update(
+        title: TaskTitle,
+        description: TaskDescription,
+    ){
+        this.title = title
+        this.description = description
     }
 
     fun complete(updatedAt: Instant) {
         this.isCompleted = true
         this.updatedAt = updatedAt
-    }
-
-    fun update(
-        title: TaskTitle,
-        description: TaskDescription
-    ){
-        this.title = title
-        this.description = description
     }
 }

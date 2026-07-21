@@ -18,7 +18,6 @@ sealed class Result<out T, out F: ResultFailure> {
             mapSuccess: (A, B) -> RESULT
         ): Result<RESULT, RESULT_FAILURE> {
 
-            // 1. Check if 'a' is a failure OR 'b' is a failure
             return if (a.isFailure || b.isFailure) {
                 val baseFailure = failure
                 a.failureOrNull?.also { baseFailure.addCause(it) }

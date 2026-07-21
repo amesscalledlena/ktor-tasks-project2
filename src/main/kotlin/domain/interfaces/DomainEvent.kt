@@ -5,6 +5,7 @@ import java.util.UUID
 
 interface DomainEvent {
     val eventId: UUID // Unique identifier for the event to prevent idempotency
+    val taskId: Int
     val occurredOn: Instant // Timestamp of the exact millisecond the event took place
 }
 

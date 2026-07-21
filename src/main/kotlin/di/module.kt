@@ -15,19 +15,19 @@ val applicationModule = module {
     // Commands
     single { CompleteTaskCommandHandler(
         repository = get(),
-        eventBus = get()
+        eventStoreRepository = get()
     ) }
     single { CreateTaskCommandHandler(
         repository = get(),
-        eventBus =  get()
+        eventStoreRepository =  get()
     ) }
     single { DeleteTaskCommandHandler(
         repository = get(),
-        eventBus = get()
+        eventStoreRepository = get()
     ) }
     single { UpdateTaskCommandHandler(
         repository = get(),
-        eventBus = get()
+        eventStoreRepository = get()
     ) }
     // Queries
     single { GetTaskQueryHandler(repository = get()) }
@@ -35,5 +35,5 @@ val applicationModule = module {
 }
 
 val eventModule = module {
-    single<EventBus> { InMemoryEventBus() }
+    single<EventStoreRepository> { ExposedEventStoreRepository() }
 }
