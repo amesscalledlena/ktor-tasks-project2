@@ -1,6 +1,6 @@
 package com.example.infrastructure.repositories
 
-import com.example.domain.interfaces.DomainEvent
+import com.example.domain.events.DomainEvent
 import com.example.domain.interfaces.EventBus
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

@@ -1,14 +1,13 @@
 package com.example.domain.events
 
 import com.example.domain.events.serializers.*
-import com.example.domain.interfaces.DomainEvent
 import kotlinx.serialization.Serializable
 import java.time.Instant
 import java.util.UUID
 
 @Serializable
 data class TaskUpdatedEvent (
-    val taskId: Int,
+    override val taskId: Int,
     val taskTitle: String,
     val taskDescription: String,
     @Serializable(with = UUIDSerializer::class)
