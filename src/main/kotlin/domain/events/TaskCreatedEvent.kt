@@ -1,16 +1,13 @@
 package com.example.domain.events
 
-import com.example.domain.events.serializers.*
-import kotlinx.serialization.Serializable
+import com.example.domain.valueobjects.TaskId
+import com.example.domain.valueobjects.TaskTitle
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
-@Serializable
 data class TaskCreatedEvent(
-    override val taskId: Int,
-    val taskTitle: String,
-    @Serializable(with = UUIDSerializer::class)
+    override val taskId: TaskId,
+    val taskTitle: TaskTitle,
     override val eventId: UUID = UUID.randomUUID(),
-    @Serializable(with = InstantSerializer::class)
     override val occurredOn: Instant = Instant.now(),
 ) : DomainEvent

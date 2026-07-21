@@ -28,6 +28,7 @@ class CreateTaskCommandHandler(
                 Task.create(
                     title = validTitle,
                     description = validDesc,
+                    eventStoreRepository = eventStoreRepository,
                 )
             }
         ).onFailure {  }
@@ -35,11 +36,6 @@ class CreateTaskCommandHandler(
 
         val newTaskId=transaction {
              val id = repository.save(result)
-            val event = TaskCreatedEvent(
-                taskId = id,
-                taskTitle = result.title.value,
-            )
-            eventStoreRepository.append(event)
 
             id
             }

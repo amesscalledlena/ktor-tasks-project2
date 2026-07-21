@@ -40,3 +40,5 @@ fun main(args : Array<String>) {
 // 8. TODO: Event saving format + Add JSON column
 // 9. TODO: Add more events if needed
 // 10. TODO: Learn about class/interface generics in kotlin
+// 11. TODO: Create TaskId that inherites from EventId
+// 12. TODO: Move the serializables to the presentation (?) layer
