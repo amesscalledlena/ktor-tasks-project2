@@ -1,6 +1,6 @@
 package com.example.infrastructure.repositories
 
-import com.example.domain.events.DomainEvent
+import com.example.domain.events.core.DomainEvent
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.infrastructure.tables.EventStoreTbl
 import kotlinx.serialization.json.Json

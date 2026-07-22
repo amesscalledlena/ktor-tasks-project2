@@ -1,5 +1,8 @@
-package com.example.domain.events
+package com.example.domain.events.valueclasses
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 @JvmInline
 value class EventVersion (val value: Int) {
     init {

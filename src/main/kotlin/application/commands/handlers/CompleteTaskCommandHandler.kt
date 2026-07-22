@@ -1,7 +1,7 @@
 package com.example.application.commands.handlers
 
 import com.example.application.commands.models.CompleteTaskCommand
-import com.example.domain.events.TaskCompletedEvent
+import com.example.domain.events.core.TaskCompletedEvent
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.railway.Result

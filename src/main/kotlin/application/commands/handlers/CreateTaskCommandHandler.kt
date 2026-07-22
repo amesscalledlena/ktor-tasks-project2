@@ -2,7 +2,6 @@ package com.example.application.commands.handlers
 
 import com.example.application.commands.models.CreateTaskCommand
 import com.example.domain.entities.Task
-import com.example.domain.events.TaskCreatedEvent
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.railway.Result

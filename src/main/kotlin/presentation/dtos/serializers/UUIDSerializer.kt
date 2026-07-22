@@ -1,4 +1,4 @@
-package com.example.domain.events.serializers
+package com.example.presentation.dtos.serializers
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

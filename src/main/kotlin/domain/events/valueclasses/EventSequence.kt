@@ -1,7 +1,10 @@
-package com.example.domain.events
+package com.example.domain.events.valueclasses
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 @JvmInline
-value class EventSequence private constructor(val value: Long) {
+value class EventSequence (val value: Long) {
     init {
         require(value >= 0) { "Event sequence cannot be negative" }
     }

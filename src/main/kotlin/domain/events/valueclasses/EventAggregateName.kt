@@ -1,4 +1,4 @@
-package com.example.domain.events
+package com.example.domain.events.valueclasses
 
 @JvmInline
 value class EventAggregateName (val value: String) {
@@ -7,7 +7,6 @@ value class EventAggregateName (val value: String) {
     }
 
     companion object {
-
         fun constructFromPersisted(aggregateName: String): EventAggregateName {
             return EventAggregateName(aggregateName)
         }

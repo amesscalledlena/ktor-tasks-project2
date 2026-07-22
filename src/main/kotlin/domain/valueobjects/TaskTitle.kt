@@ -1,7 +1,9 @@
 package com.example.domain.valueobjects
 
 import com.example.domain.railway.*
+import kotlinx.serialization.Serializable
 
+@Serializable
 @JvmInline
 value class TaskTitle private constructor(val value: String){
     companion object{

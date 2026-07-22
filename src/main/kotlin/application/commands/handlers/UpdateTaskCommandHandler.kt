@@ -1,7 +1,7 @@
 package com.example.application.commands.handlers
 
 import com.example.application.commands.models.UpdateTaskCommand
-import com.example.domain.events.TaskUpdatedEvent
+import com.example.domain.events.core.TaskUpdatedEvent
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.railway.*

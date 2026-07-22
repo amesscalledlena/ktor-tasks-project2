@@ -1,7 +1,7 @@
 package com.example.application.commands.handlers
 
 import com.example.application.commands.models.DeleteTaskCommand
-import com.example.domain.events.TaskDeletedEvent
+import com.example.domain.events.core.TaskDeletedEvent
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.railway.Result
