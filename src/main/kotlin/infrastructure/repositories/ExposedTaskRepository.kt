@@ -4,6 +4,7 @@ import com.example.domain.entities.Task
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.valueobjects.TaskId
 import com.example.infrastructure.tables.TaskTbl
+import com.example.presentation.dtos.TaskDto
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -23,33 +24,31 @@ class ExposedTaskRepository : TaskRepository {
         }
     }
 
-    override fun findById(id: TaskId): Task? {
-
+    override fun findById(id: TaskId): TaskDto? {
         return TaskTbl.selectAll()
             .where { TaskTbl.id eq id.value }
             .map { row ->
-//                Task.fromDatabase(
-//                    rawId = row[TaskTbl.id],
-//                    rawTitle = row[TaskTbl.title],
-//                    rawDescription = row[TaskTbl.description],
-//                    rawUpdatedAt = row[TaskTbl.updatedAt],
-//                    rawIsCompleted = row[TaskTbl.isCompleted],
-//                TODO : add TaskDto
-            )
-        }.singleOrNull()
+                TaskDto(
+                    id = row[TaskTbl.id],
+                    title = row[TaskTbl.title],
+                    description = row[TaskTbl.description],
+                    updatedAt = row[TaskTbl.updatedAt],
+                    isCompleted = row[TaskTbl.isCompleted]
+                )
+            }.singleOrNull()
     }
 
-    override fun findAllPaginated(limit: Int, offset: Long): List<Task> {
+    override fun findAllPaginated(limit: Int, offset: Long): List<TaskDto> {
         return TaskTbl.selectAll()
             .limit(limit)
             .offset(offset)
             .map { row ->
-                Task.fromDatabase(
-                    rawId = row[TaskTbl.id],
-                    rawTitle = row[TaskTbl.title],
-                    rawDescription = row[TaskTbl.description],
-                    rawUpdatedAt = row[TaskTbl.updatedAt],
-                    rawIsCompleted = row[TaskTbl.isCompleted],
+                TaskDto(
+                    id = row[TaskTbl.id],
+                    title = row[TaskTbl.title],
+                    description = row[TaskTbl.description],
+                    updatedAt = row[TaskTbl.updatedAt],
+                    isCompleted = row[TaskTbl.isCompleted]
                 )
             }
     }

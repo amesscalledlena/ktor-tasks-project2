@@ -16,7 +16,7 @@ import java.util.UUID
 
 @Serializable
 data class TaskUpdatedEvent (
-    override val id: EventId = EventId(UUID.randomUUID()),
+    override val id: EventId = EventId.generate(),
     override val aggregateId: EventAggregateId,
     override val sequence: EventSequence,
     override val version: EventVersion = EventVersion(1),

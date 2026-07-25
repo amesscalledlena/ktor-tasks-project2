@@ -2,14 +2,12 @@ package com.example.domain.entities
 
 import com.example.domain.events.core.*
 import com.example.domain.events.entity.EventSourceEntity
-import com.example.domain.events.valueclasses.EventSequence
+import com.example.domain.events.interfaces.EventId
+import com.example.domain.events.valueclasses.*
 import com.example.domain.railway.TaskError
-import com.example.domain.valueobjects.TaskDescription
-import com.example.domain.valueobjects.TaskId
-import com.example.domain.valueobjects.TaskTitle
 import java.time.Instant
 import com.example.domain.railway.*
-import com.example.domain.valueobjects.UserId
+import com.example.domain.valueobjects.*
 
 //A Task can only process task-related events, not user-related events.
 //Why private constructor? Because state can only change because an event happened.
@@ -29,7 +27,22 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     lateinit var updatedAt: Instant
         private set
 
-    var isCompleted: Boolean = false
+    lateinit var createdAt: Instant
+        private set
+
+    lateinit var status: TaskStatus
+        private set
+
+    lateinit var priority: TaskPriority
+        private set
+
+    lateinit var category: TaskCategory
+        private set
+
+    var completedAt: Instant? = null
+        private set
+
+    var dueDate: Instant? = null
         private set
 
     private constructor(event: TaskEvent) : this() {
@@ -37,15 +50,16 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     }
 
     override fun apply(event: TaskEvent) { // The only way to change the state of a task
-        when(event){
-            is TaskCompletedEvent -> { this.isCompleted = true }
-            is TaskCreatedEvent -> {
-                this.id = event.aggregateId as TaskId
-                this.title = event.taskTitle
-                this.description = event.taskDescription
-                this.updatedAt = event.occurredOn
-                this.isCompleted = false
+        when (event) {
+            is TaskCompletedEvent -> {
+                this.status = TaskStatus.DONE
+                this.completedAt = event.occurredOn
             }
+
+            is TaskCreatedEvent -> {
+                apply(event)
+            }
+
             is TaskDeletedEvent -> {}
             is TaskUpdatedEvent -> {
                 this.title = event.taskTitle
@@ -57,29 +71,45 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     }
 
     companion object {
-        fun makeNew(event: TaskEvent): Result<Task, TaskError> {
-            val task = Task()
+        fun makeNew(
+            id: TaskId,
+            title: TaskTitle,
+            description: TaskDescription,
+            userId: UserId,
+            priority: TaskPriority,
+            category: TaskCategory,
+            dueDate: Instant?
+        ): Result<Task, TaskError> {
+            val event = TaskCreatedEvent(
+                taskTitle = title,
+                taskDescription = description,
+                aggregateId = id,
+                sequence = EventSequence(1),
+                occurredByUserId = userId,
+                taskId = EventId.fromDatabase(id.value),
+                type = EventType("TaskCreatedEvent"),
+                version = EventVersion(1),
+                id = EventId.generate(),
+                taskPriority = priority, // Pass to event
+                taskCategory = category, // Pass to event
+                taskDueDate = dueDate,
+            )
+
+            // TODO: Move enum to another file - Add createdAt - look for more features to add
+            val task = Task(event)
+
             //The constructor handles calling raiseEvent() internally.
             //raiseEvent will add it to the 'uncommitted events' list to be saved to the database later,
             //and then it will instantly call the apply method to fill in the blank shell.
+
             return Result.Success(task)
         }
 
-        fun fromDatabase(
-            rawId: String,
-            rawTitle: String,
-            rawDescription: String,
-            rawUpdatedAt: Instant,
-            rawIsCompleted: Boolean
-        ): Task{
+        fun fromDatabase(eventsList: List<TaskEvent>): Task {
             val task = Task()
-
-            task.id = TaskId.fromDatabase(rawId)
-            task.title = TaskTitle.fromDatabase(rawTitle)
-            task.description = TaskDescription.fromDatabase(rawDescription)
-            task.updatedAt = rawUpdatedAt
-            task.isCompleted = rawIsCompleted
-
+            eventsList.forEach { pastEvent ->
+                task.apply(pastEvent)
+            }
             return task
         }
     }
@@ -87,8 +117,8 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     fun update(userId: UserId, title: TaskTitle, description: TaskDescription): Result<Task, TaskError> {
         val event = TaskUpdatedEvent(
             aggregateId = this.id,
-            sequence = EventSequence(this.getRecordedEvents().size +1L),
-            occurredByUserId=userId,
+            sequence = EventSequence(this.getRecordedEvents().size + 1L),
+            occurredByUserId = userId,
             taskTitle = title,
             taskDescription = description,
         )
@@ -101,11 +131,23 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     fun complete(userId: UserId): Result<Task, TaskError> {
         val event = TaskCompletedEvent(
             aggregateId = this.id,
-            sequence = EventSequence(this.getRecordedEvents().size +1L),
+            sequence = EventSequence(this.getRecordedEvents().size + 1L),
             occurredByUserId = userId,
         )
 
         raiseEvent(event)
         return Result.Success(this)
+    }
+
+    private fun apply(event: TaskCreatedEvent) {
+        this.id = event.aggregateId as TaskId
+        this.title = event.taskTitle
+        this.description = event.taskDescription
+        this.updatedAt = event.occurredOn
+        this.createdAt = event.occurredOn
+        this.status = TaskStatus.TODO
+        this.priority = event.taskPriority
+        this.category = event.taskCategory
+        this.dueDate = event.taskDueDate
     }
 }
