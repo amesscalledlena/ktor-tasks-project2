@@ -20,4 +20,8 @@ sealed class TaskError: ResultFailure {
     data class InvalidPagination(val reason: String) : TaskError() {
         override val message: String = reason
     }
+
+    data class InvalidPriority(val reason: String) : TaskError(){
+        override val message: String = reason
+    }
 }

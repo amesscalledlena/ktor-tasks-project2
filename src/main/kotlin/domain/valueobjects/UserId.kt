@@ -1,11 +1,26 @@
 package com.example.domain.valueobjects
 
+import com.example.domain.railway.Result
+import com.example.domain.railway.TaskError
 import com.example.presentation.dtos.serializers.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
-@kotlinx.serialization.Serializable
-@JvmInline
-value class UserId(
-    @Serializable(with = UUIDSerializer::class) val value: UUID
-)
+@Serializable
+data class UserId private constructor(val value: String){
+    companion object {
+        fun generate(): UserId {
+            return UserId(UUID.randomUUID().toString())
+        }
+
+        fun create(id: String): Result<UserId, TaskError> { // Only for validation
+            val validId = UserId(UUID.fromString(id).toString())
+            return Result.Success(validId)
+        }
+
+        fun fromDatabase(value: String): UserId { // For DB loading
+            return UserId(value.toString())
+        }
+
+    }
+}
