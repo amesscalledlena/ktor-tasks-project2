@@ -16,17 +16,19 @@ class ExposedEventStoreRepository : EventStoreRepository {
         ignoreUnknownKeys = true
     }
 
-    override fun append(event: Event): Int {
-        val jsonPayload = json.encodeToString(event)
+    override fun append(events: List<Event>) {
+        for(event in events) {
+            val jsonPayload = json.encodeToString(event)
 
-        return EventStoreTbl.insert {
-            it[eventId] = event.id.value.toString()
-            it[aggregateId] = event.aggregateId.value
-            it[sequence] = event.sequence.value
-            it[eventType] = event.type.value
-            it[payload] = jsonPayload
-            it[occurredOn] = event.occurredOn
-        } get EventStoreTbl.id
+            EventStoreTbl.insert {
+                it[eventId] = event.id.value.toString()
+                it[aggregateId] = event.aggregateId.value
+                it[sequence] = event.sequence.value
+                it[eventType] = event.type.value
+                it[payload] = jsonPayload
+                it[occurredOn] = event.occurredOn
+            }
+        }
     }
 
     override fun getEventStream(aggregateId: EventAggregateId): List<Event> {

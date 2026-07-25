@@ -57,9 +57,7 @@ class CreateTaskCommandHandler(
         }
 
         transaction {
-            for(event in task.getRecordedEvents()){
-                eventStoreRepository.append(event)
-            }
+            eventStoreRepository.append(task.getRecordedEvents())
             repository.save(task)
         }
 

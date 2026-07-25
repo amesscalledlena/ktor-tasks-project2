@@ -48,6 +48,34 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     private constructor(event: TaskEvent) : this() {
         raiseEvent(event)
     }
+    //TODO: create TaskQm and replace it with TaskTbl (repo). - move the loop inside the append - Use/Create private constructor (Task)
+
+    private constructor(
+        id: TaskId,
+        title: TaskTitle,
+        description: TaskDescription,
+        userId: UserId,
+        priority: TaskPriority,
+        category: TaskCategory,
+        dueDate: Instant?
+    ) : this() {
+        raiseEvent(
+            TaskCreatedEvent(
+                taskTitle = title,
+                taskDescription = description,
+                aggregateId = id,
+                sequence = EventSequence(1),
+                occurredByUserId = userId,
+                taskId = EventId.fromDatabase(id.value),
+                type = EventType("TaskCreatedEvent"),
+                version = EventVersion(1),
+                id = EventId.generate(),
+                taskPriority = priority,
+                taskCategory = category,
+                taskDueDate = dueDate,
+            )
+        )
+    }
 
     override fun apply(event: TaskEvent) { // The only way to change the state of a task
         when (event) {
@@ -80,7 +108,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
             category: TaskCategory,
             dueDate: Instant?
         ): Result<Task, TaskError> {
-            val event = TaskCreatedEvent(
+            val task = Task(
                 taskTitle = title,
                 taskDescription = description,
                 aggregateId = id,
@@ -94,9 +122,6 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
                 taskCategory = category, // Pass to event
                 taskDueDate = dueDate,
             )
-
-            // TODO: Move enum to another file - Add createdAt - look for more features to add
-            val task = Task(event)
 
             //The constructor handles calling raiseEvent() internally.
             //raiseEvent will add it to the 'uncommitted events' list to be saved to the database later,
