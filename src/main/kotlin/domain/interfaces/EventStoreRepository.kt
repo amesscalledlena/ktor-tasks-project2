@@ -1,8 +1,9 @@
 package com.example.domain.interfaces
 
-import com.example.domain.events.core.DomainEvent
+import com.example.domain.events.interfaces.Event
+import com.example.domain.events.openclasses.EventAggregateId
 
 interface EventStoreRepository {
-    fun append(event: DomainEvent): Int
-    fun getEventStream(taskId: Int): List<DomainEvent>
+    fun append(event: Event): Int
+    fun getEventStream(aggregateId: EventAggregateId): List<Event>
 }

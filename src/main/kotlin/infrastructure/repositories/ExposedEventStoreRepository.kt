@@ -1,31 +1,42 @@
 package com.example.infrastructure.repositories
 
-import com.example.domain.events.core.DomainEvent
+import com.example.domain.events.interfaces.Event
+import com.example.domain.events.openclasses.EventAggregateId
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.infrastructure.tables.EventStoreTbl
 import kotlinx.serialization.json.Json
+import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 
-class ExposedEventStoreRepository: EventStoreRepository {
+class ExposedEventStoreRepository : EventStoreRepository {
 
-    private val json = Json{ // Create a configured Json instance for the repository
+    private val json = Json { // Create a configured Json instance for the repository
         ignoreUnknownKeys = true
     }
 
-    override fun append(event: DomainEvent): Int {
+    override fun append(event: Event): Int {
         val jsonPayload = json.encodeToString(event)
 
-        val typeOfEvent = event::class.simpleName ?: "Unknown"
-
         return EventStoreTbl.insert {
-            it[taskId] = event.taskId
-            it[eventType] = typeOfEvent
+            it[eventId] = event.id.value.toString()
+            it[aggregateId] = event.aggregateId.value
+            it[sequence] = event.sequence.value
+            it[eventType] = event.type.value
             it[payload] = jsonPayload
             it[occurredOn] = event.occurredOn
         } get EventStoreTbl.id
-        }
+    }
 
-    override fun getEventStream(taskId: Int): List<DomainEvent> {
-        TODO("Not yet implemented")
+    override fun getEventStream(aggregateId: EventAggregateId): List<Event> {
+        return EventStoreTbl.selectAll().where { EventStoreTbl.aggregateId eq aggregateId.value }
+            .orderBy(
+                EventStoreTbl.sequence to SortOrder.ASC
+            )
+            .map { row ->
+                val rawJson = row[EventStoreTbl.payload]
+                Json.decodeFromString<Event>(rawJson)
+            }
     }
 }

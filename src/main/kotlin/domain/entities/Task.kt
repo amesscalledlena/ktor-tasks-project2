@@ -20,10 +20,10 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     lateinit var id: TaskId
         private set // Public getter and private setter
 
-    lateinit var title: TaskTitle // TODO()
+    lateinit var title: TaskTitle
         private set
 
-    var description: TaskDescription? = null
+    lateinit var description: TaskDescription
         private set
 
     lateinit var updatedAt: Instant
@@ -31,6 +31,10 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
 
     var isCompleted: Boolean = false
         private set
+
+    private constructor(event: TaskEvent) : this() {
+        raiseEvent(event)
+    }
 
     override fun apply(event: TaskEvent) { // The only way to change the state of a task
         when(event){
@@ -55,10 +59,28 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     companion object {
         fun makeNew(event: TaskEvent): Result<Task, TaskError> {
             val task = Task()
-            task.raiseEvent(event) //TODO()
+            //The constructor handles calling raiseEvent() internally.
             //raiseEvent will add it to the 'uncommitted events' list to be saved to the database later,
             //and then it will instantly call the apply method to fill in the blank shell.
             return Result.Success(task)
+        }
+
+        fun fromDatabase(
+            rawId: String,
+            rawTitle: String,
+            rawDescription: String,
+            rawUpdatedAt: Instant,
+            rawIsCompleted: Boolean
+        ): Task{
+            val task = Task()
+
+            task.id = TaskId.fromDatabase(rawId)
+            task.title = TaskTitle.fromDatabase(rawTitle)
+            task.description = TaskDescription.fromDatabase(rawDescription)
+            task.updatedAt = rawUpdatedAt
+            task.isCompleted = rawIsCompleted
+
+            return task
         }
     }
 

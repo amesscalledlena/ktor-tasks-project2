@@ -15,7 +15,11 @@ class CompleteTaskCommandHandler(
     private val eventStoreRepository: EventStoreRepository,
     ) {
     fun execute(command: CompleteTaskCommand): Result<Boolean, TaskError> {
-        val existingTask = transaction{
+        val resultTaskId = TaskId.generate()
+
+
+
+        /*val existingTask = transaction{
             repository.findById(command.id)
         }
 
@@ -38,6 +42,6 @@ class CompleteTaskCommandHandler(
             eventStoreRepository.append(event)
         }
 
-        return Result.Success(true)
+        return Result.Success(true)*/
     }
 }

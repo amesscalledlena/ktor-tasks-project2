@@ -2,11 +2,8 @@ package com.example.domain.valueobjects
 
 import com.example.domain.railway.Result
 import com.example.domain.railway.TaskError
-import kotlinx.serialization.Serializable
 
-@Serializable
-@JvmInline
-value class TaskDescription private constructor(val value: String) {
+data class TaskDescription private constructor(val value: String) {
     companion object {
         fun create(description: String): Result<TaskDescription, TaskError> {
             if(description.isBlank()){

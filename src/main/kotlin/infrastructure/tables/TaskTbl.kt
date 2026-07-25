@@ -4,7 +4,7 @@ import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.javatime.timestamp
 
 object TaskTbl : Table() {
-    val id = integer("id").autoIncrement()
+    val id = varchar("id", 36)
     val title = varchar("title", 255)
     val description = text("description")
     val updatedAt = timestamp("updatedAt")
