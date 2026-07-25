@@ -20,7 +20,11 @@ class ExposedTaskRepository : TaskRepository {
             it[TaskTbl.title] = task.title.value
             it[TaskTbl.description] = task.description.value
             it[TaskTbl.updatedAt] = Instant.now()
-            it[TaskTbl.isCompleted] = task.isCompleted
+            it[TaskTbl.createdAt] = task.createdAt
+            it[status] = task.status.name
+            it[priority] = task.priority.name
+            it[category] = task.category.value
+            it[dueDate] = task.dueDate
         }
     }
 
@@ -32,8 +36,12 @@ class ExposedTaskRepository : TaskRepository {
                     id = row[TaskTbl.id],
                     title = row[TaskTbl.title],
                     description = row[TaskTbl.description],
+                    createdAt = row[TaskTbl.createdAt],
                     updatedAt = row[TaskTbl.updatedAt],
-                    isCompleted = row[TaskTbl.isCompleted]
+                    dueDate = row[TaskTbl.dueDate],
+                    status = row[TaskTbl.status],
+                    priority = row[TaskTbl.priority],
+                    category = row[TaskTbl.category]
                 )
             }.singleOrNull()
     }
@@ -47,14 +55,14 @@ class ExposedTaskRepository : TaskRepository {
                     id = row[TaskTbl.id],
                     title = row[TaskTbl.title],
                     description = row[TaskTbl.description],
+                    createdAt = row[TaskTbl.createdAt],
                     updatedAt = row[TaskTbl.updatedAt],
-                    isCompleted = row[TaskTbl.isCompleted]
+                    dueDate = row[TaskTbl.dueDate],
+                    status = row[TaskTbl.status],
+                    priority = row[TaskTbl.priority],
+                    category = row[TaskTbl.category]
                 )
             }
-    }
-
-    override fun count(): Long {
-        return TaskTbl.selectAll().count()
     }
 
     override fun update(task: Task): Boolean {
@@ -62,7 +70,10 @@ class ExposedTaskRepository : TaskRepository {
             it[TaskTbl.title] = task.title.value
             it[TaskTbl.description] = task.description.value
             it[TaskTbl.updatedAt] = task.updatedAt
-            it[TaskTbl.isCompleted] = task.isCompleted
+            it[status] = task.status.name
+            it[priority] = task.priority.name
+            it[category] = task.category.value
+            it[dueDate] = task.dueDate
         }
         return updatedRowCount > 0
     }
@@ -70,5 +81,9 @@ class ExposedTaskRepository : TaskRepository {
     override fun delete(id: TaskId): Boolean {
         val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id.value.toString()}
         return deletedRowCount > 0
+    }
+
+    override fun count(): Long {
+        return TaskTbl.selectAll().count()
     }
 }

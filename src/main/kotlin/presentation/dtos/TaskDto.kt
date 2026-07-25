@@ -6,6 +6,10 @@ data class TaskDto(
     val id: String,
     val title: String,
     val description: String,
-    val isCompleted: Boolean,
-    val updatedAt: Instant
+    val updatedAt: Instant,
+    val createdAt: Instant,
+    val dueDate: Instant?,
+    val status: String,
+    val priority: String,
+    val category: String
 )
