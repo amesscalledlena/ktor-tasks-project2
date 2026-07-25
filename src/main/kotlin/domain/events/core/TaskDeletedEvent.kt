@@ -20,7 +20,7 @@ data class TaskDeletedEvent (
     override val type: EventType,
     override val aggregateId: EventAggregateId,
     override val sequence: EventSequence,
-    override val version: EventVersion,
+    override val version: EventVersion = EventVersion(1),
     override val occurredByUserId: UserId,
-    override val id: EventId,
+    override val id: EventId = EventId.generate(),
 ): TaskEvent

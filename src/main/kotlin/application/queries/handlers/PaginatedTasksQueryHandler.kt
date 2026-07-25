@@ -35,24 +35,3 @@ class PaginatedTasksQueryHandler(private val repository: TaskRepository) {
         }
     }
 }
-
-/*        return transaction {
-            val result = runCatching {
-                val pageReq = PageRequest(query.page, query.limit)
-                val totalItems = repository.count()
-                val totalPages = pageReq.calculateTotalPages(totalItems)
-                val currentPage = pageReq.safePage
-                val tasks = repository.findAllPaginated(pageReq.safeLimit, pageReq.offset)
-
-                PaginatedTasksResultQuery(
-                    tasks = tasks,
-                    totalItems = totalItems,
-                    totalPages = totalPages,
-                    currentPage = currentPage
-                )
-            }
-            result.onFailure {
-                rollback()
-            }
-        }
-*/

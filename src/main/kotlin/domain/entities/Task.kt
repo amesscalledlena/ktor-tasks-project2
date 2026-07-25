@@ -2,6 +2,7 @@ package com.example.domain.entities
 
 import com.example.domain.events.core.*
 import com.example.domain.events.entity.EventSourceEntity
+import com.example.domain.events.interfaces.Event
 import com.example.domain.events.interfaces.EventId
 import com.example.domain.events.valueclasses.*
 import com.example.domain.railway.TaskError
@@ -88,12 +89,13 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
                 apply(event)
             }
 
-            is TaskDeletedEvent -> {}
             is TaskUpdatedEvent -> {
                 this.title = event.taskTitle
                 this.description = event.taskDescription
                 this.updatedAt = event.occurredOn
             }
+
+            else -> {}
         }
 
     }
@@ -130,7 +132,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
             return Result.Success(task)
         }
 
-        fun fromDatabase(eventsList: List<TaskEvent>): Task {
+        fun fromDatabase(eventsList: List<Event>): Task {
             val task = Task()
             eventsList.forEach { pastEvent ->
                 task.apply(pastEvent)
@@ -158,6 +160,19 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
             aggregateId = this.id,
             sequence = EventSequence(this.getRecordedEvents().size + 1L),
             occurredByUserId = userId,
+        )
+
+        raiseEvent(event)
+        return Result.Success(this)
+    }
+
+    fun delete (userId: UserId): Result<Task, TaskError> {
+        val event = TaskDeletedEvent(
+            aggregateId = this.id,
+            sequence = EventSequence(this.getRecordedEvents().size + 1L),
+            occurredByUserId = userId,
+            taskId = EventId.fromDatabase(this.id.value) ,
+            type = EventType("TasDeletedEvent"),
         )
 
         raiseEvent(event)

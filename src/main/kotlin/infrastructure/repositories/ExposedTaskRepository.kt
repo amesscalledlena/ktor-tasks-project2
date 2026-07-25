@@ -11,7 +11,6 @@ import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 import java.time.Instant
-import java.util.UUID
 
 class ExposedTaskRepository : TaskRepository {
     override fun save(task: Task) {
@@ -78,7 +77,7 @@ class ExposedTaskRepository : TaskRepository {
         return updatedRowCount > 0
     }
 
-    override fun delete(id: TaskId): Boolean {
+    override fun delete(id: String): Boolean {
         val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id.value.toString()}
         return deletedRowCount > 0
     }
