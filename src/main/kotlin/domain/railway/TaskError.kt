@@ -1,7 +1,7 @@
 package com.example.domain.railway
 
 sealed class TaskError: ResultFailure {
-    data class NotFound(val taskId: Int) : TaskError(){
+    data class NotFound(val taskId: String) : TaskError(){
         override val message: String = "$taskId not found"
     }
 

@@ -9,13 +9,10 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class PaginatedTasksQueryHandler(private val repository: TaskRepository) {
     fun execute(query: PaginatedTasksQuery): Result<PaginatedTasksResultQuery, TaskError> {
-        val pageReqVO = PageRequest.create(page = query.page, limit = query.limit)
-
-        if(pageReqVO is Result.Failure){
-            return Result.failure(pageReqVO.failureOrException)
+        val pageReq = when (val res = PageRequest.create(page = query.page, limit = query.limit)) {
+            is Result.Success -> res.value
+            is Result.Failure -> return Result.failure(res.failure)
         }
-
-        val pageReq = pageReqVO.successOrException
 
         return transaction {
             val totalItems = repository.count()
