@@ -49,7 +49,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     private constructor(event: TaskEvent) : this() {
         raiseEvent(event)
     }
-    //TODO: create TaskQm and replace it with TaskTbl (repo). - move the loop inside the append - Use/Create private constructor (Task)
+    //TODO: create TaskQm and replace it with TaskTbl (repo) - Use/Create private constructor (Task)
 
     private constructor(
         id: TaskId,
@@ -111,18 +111,13 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
             dueDate: Instant?
         ): Result<Task, TaskError> {
             val task = Task(
-                taskTitle = title,
-                taskDescription = description,
-                aggregateId = id,
-                sequence = EventSequence(1),
-                occurredByUserId = userId,
-                taskId = EventId.fromDatabase(id.value),
-                type = EventType("TaskCreatedEvent"),
-                version = EventVersion(1),
-                id = EventId.generate(),
-                taskPriority = priority, // Pass to event
-                taskCategory = category, // Pass to event
-                taskDueDate = dueDate,
+                id = id,
+                title = title,
+                description = description,
+                userId = userId,
+                priority = priority,
+                category = category,
+                dueDate = dueDate
             )
 
             //The constructor handles calling raiseEvent() internally.
@@ -132,7 +127,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
             return Result.Success(task)
         }
 
-        fun fromDatabase(eventsList: List<Event>): Task {
+        fun fromDatabase(eventsList: List<TaskEvent>): Task {
             val task = Task()
             eventsList.forEach { pastEvent ->
                 task.apply(pastEvent)
@@ -172,7 +167,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
             sequence = EventSequence(this.getRecordedEvents().size + 1L),
             occurredByUserId = userId,
             taskId = EventId.fromDatabase(this.id.value) ,
-            type = EventType("TasDeletedEvent"),
+            type = EventType("TaskDeletedEvent"),
         )
 
         raiseEvent(event)

@@ -12,6 +12,8 @@ import com.example.application.queries.models.GetTaskQuery
 import com.example.application.queries.handlers.GetTaskQueryHandler
 import com.example.application.queries.models.PaginatedTasksQuery
 import com.example.application.queries.handlers.PaginatedTasksQueryHandler
+import com.example.domain.valueobjects.TaskCategory
+import com.example.domain.valueobjects.TaskPriority
 import com.example.infrastructure.repositories.ExposedTaskRepository
 import com.example.presentation.dtos.PaginatedResponse
 import com.example.presentation.dtos.TaskResponse
@@ -45,7 +47,12 @@ fun Application.configureRouting() {
             //CREATE
             post {
                 val newTask = call.receive<TaskResponse>()
-                val command = CreateTaskCommand(newTask.title, newTask.description)
+                val command = CreateTaskCommand(
+                    newTask.title, newTask.description,
+                    userId = call.request.header("X-User-Id") ?: "default-user",
+                    priority = TaskPriority.valueOf(newTask.priority ?: "MEDIUM").toString(),
+                    category = TaskCategory.create(newTask.category ?: "General").toString()
+                )
                 val newTaskId = createHandler.execute(command)
                 call.respond(HttpStatusCode.Created, "Created new task with ID $newTaskId")
             }
@@ -71,7 +78,7 @@ fun Application.configureRouting() {
             }
             //READ ONE
             get("/{id}") {
-                val taskId = call.parameters["id"]!!.toInt()
+                val taskId = call.parameters["id"]!!
 
                 val query = GetTaskQuery(taskId)
                 val result = getTaskHandler.execute(query)
@@ -84,12 +91,13 @@ fun Application.configureRouting() {
             }
             //UPDATE
             put("/{id}") {
-                val taskId = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
+                val taskId = call.parameters["id"] ?: return@put call.respond(HttpStatusCode.BadRequest)
                 val updatedTaskData = call.receive<TaskUpdate>()
                 val command = UpdateTaskCommand(
                     taskId,
                     updatedTaskData.title,
                     updatedTaskData.description,
+                    userId = call.request.header("X-User-Id") ?: "default-user" ,
                 )
                 val updatedTask = updateHandler.execute(command) // This is now a Result<boolean> wrapper
 
@@ -109,8 +117,11 @@ fun Application.configureRouting() {
             }
             patch("/{id}/complete") {
                 val taskId =
-                    call.parameters["id"]?.toIntOrNull() ?: return@patch call.respond(HttpStatusCode.BadRequest)
-                val command = CompleteTaskCommand(taskId)
+                    call.parameters["id"] ?: return@patch call.respond(HttpStatusCode.BadRequest)
+                val command = CompleteTaskCommand(
+                    taskId,
+                    userId =call.request.header("X-User-Id") ?: "default-user",
+                )
                 val result = completeHandler.execute(command)
                 result.onSuccess { completed ->
                     if (completed) {
@@ -126,8 +137,11 @@ fun Application.configureRouting() {
             //DELETE
             delete("/{id}") {
                 val taskId =
-                    call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
-                val command = DeleteTaskCommand(taskId)
+                    call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
+                val command = DeleteTaskCommand(
+                    id = taskId,
+                    userId = call.request.header("X-User-Id") ?: "default-user"
+                )
                 val result = deleteHandler.execute(command)
                 result
                     .onSuccess { deleted ->
