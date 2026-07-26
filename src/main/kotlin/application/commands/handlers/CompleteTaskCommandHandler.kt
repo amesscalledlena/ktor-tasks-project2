@@ -25,19 +25,23 @@ class CompleteTaskCommandHandler(
             is Result.Failure -> return Result.failure(res.failure)
         }
 
-        // Rebuild the Task entity by replaying its history
-        val task = eventStoreRepository.getEventStream(idVO)
+        val result: Result<Boolean, TaskError> = transaction {
+            // Rebuild the Task entity by replaying its history inside the transaction context
+            val task = eventStoreRepository.getEventStream(idVO)
 
-        when (val completedTask = task.complete(userIdVO)) {
-            is Result.Failure -> return Result.failure(completedTask.failure)
-            is Result.Success -> {}
+            when (val completedTask = task.complete(userIdVO)) {
+                is Result.Failure -> {
+                    rollback()
+                    return@transaction Result.failure(completedTask.failure)
+                }
+                is Result.Success -> {
+                    eventStoreRepository.append(task.getRecordedEvents())
+                    repository.update(task)
+                    return@transaction Result.success(true)
+                }
+            }
         }
 
-        transaction {
-            eventStoreRepository.append(task.getRecordedEvents())
-            repository.update(task)
-        }
-
-        return Result.success(true)
+        return result
     }
 }

@@ -80,21 +80,9 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
 
     override fun apply(event: TaskEvent) { // The only way to change the state of a task
         when (event) {
-            is TaskCompletedEvent -> {
-                this.status = TaskStatus.DONE
-                this.completedAt = event.occurredOn
-            }
-
-            is TaskCreatedEvent -> {
-                apply(event)
-            }
-
-            is TaskUpdatedEvent -> {
-                this.title = event.taskTitle
-                this.description = event.taskDescription
-                this.updatedAt = event.occurredOn
-            }
-
+            is TaskCreatedEvent -> applyCreated(event)
+            is TaskUpdatedEvent -> applyUpdated(event)
+            is TaskCompletedEvent -> applyCompleted(event)
             else -> {}
         }
 
@@ -180,8 +168,8 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
         return Result.Success(this)
     }
 
-    private fun apply(event: TaskCreatedEvent) {
-        this.id = event.aggregateId as TaskId
+    private fun applyCreated(event: TaskCreatedEvent) {
+        this.id = TaskId.fromDatabase(event.aggregateId.value)
         this.title = event.taskTitle
         this.description = event.taskDescription
         this.updatedAt = event.occurredOn
@@ -190,5 +178,17 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
         this.priority = event.taskPriority
         this.category = event.taskCategory
         this.dueDate = event.taskDueDate
+    }
+
+    private fun applyUpdated(event: TaskUpdatedEvent){
+        //this.id = TaskId.fromDatabase(event.aggregateId.value)
+        this.title = event.taskTitle
+        this.description = event.taskDescription
+        this.updatedAt = event.occurredOn
+    }
+
+    private fun applyCompleted(event: TaskCompletedEvent){
+        this.status = TaskStatus.DONE
+        this.completedAt = event.occurredOn
     }
 }

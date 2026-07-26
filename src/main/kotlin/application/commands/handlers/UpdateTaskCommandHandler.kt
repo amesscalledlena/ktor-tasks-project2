@@ -36,27 +36,26 @@ class  UpdateTaskCommandHandler(
             is Result.Failure -> return Result.failure(res.failure)
         }
 
-        //TODO:- private constructor of Task
+        val result: Result<Boolean, TaskError> = transaction {
+            val task = eventStoreRepository.getEventStream(idVO)
 
-        // Rebuild the Task entity by replaying its history
-        val task = eventStoreRepository.getEventStream(idVO)
+            val updatedTask = task.update(userId = userIdVO, title = titleVO, description = descriptionVO)
 
-        val updatedTask = task.update(
-            userId = userIdVO,
-            title = titleVO,
-            description = descriptionVO
-        )
-        when (updatedTask) {
-            is Result.Failure -> return Result.failure(updatedTask.failure)
-            is Result.Success -> {}
+            when (updatedTask) {
+                is Result.Failure -> {
+                    rollback() // Abort database changes
+                    return@transaction Result.failure(updatedTask.failure)
+                }
+                is Result.Success -> {
+                    eventStoreRepository.append(task.getRecordedEvents())
+                    repository.update(task)
+                    return@transaction Result.success(true)
+                }
+            }
         }
 
-        transaction {
-            eventStoreRepository.append(task.getRecordedEvents())
-            repository.update(task)
-        }
-
-        return Result.success(true)
+        // 3. Return the captured result to the routing layer
+        return result
 
     }
 }

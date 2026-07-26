@@ -7,6 +7,7 @@ import com.example.domain.events.valueclasses.EventSequence
 import com.example.domain.events.valueclasses.EventType
 import com.example.domain.events.valueclasses.EventVersion
 import com.example.domain.valueobjects.UserId
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
@@ -20,6 +21,7 @@ data class TaskCompletedEvent(
     @Serializable(with = InstantSerializer::class)
     override val occurredOn: Instant = Instant.now()
 ) : TaskEvent{
+    @SerialName("domain_event_type")
     override val type: EventType
         get() = EventType("TaskCompletedEvent")
 }

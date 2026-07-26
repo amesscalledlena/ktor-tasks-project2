@@ -1,7 +1,7 @@
 package com.example.domain.interfaces
 
 import com.example.domain.entities.Task
-import com.example.domain.events.interfaces.Event
+import com.example.domain.events.core.Event
 import com.example.domain.events.openclasses.EventAggregateId
 
 interface EventStoreRepository {

@@ -45,8 +45,8 @@ fun Application.configureRouting() {
             post {
                 val newTask = call.receive<TaskResponse>()
                 val command = CreateTaskCommand(
-                    newTask.title, newTask.description,
-                    userId = call.request.header("X-User-Id") ?: "default-user",
+                    newTask.    title, newTask.description,
+                    userId = call.request.header("X-User-Id") ?: "00000000-0000-0000-0000-000000000000",
                     priority = TaskPriority.valueOf(newTask.priority ?: "MEDIUM").toString(),
                     category = TaskCategory.create(newTask.category ?: "General").toString()
                 )
@@ -94,7 +94,7 @@ fun Application.configureRouting() {
                     taskId,
                     updatedTaskData.title,
                     updatedTaskData.description,
-                    userId = call.request.header("X-User-Id") ?: "default-user" ,
+                    userId = call.request.header("X-User-Id") ?: "00000000-0000-0000-0000-000000000000",
                 )
                 val updatedTask = updateHandler.execute(command) // This is now a Result<boolean> wrapper
 
@@ -117,7 +117,7 @@ fun Application.configureRouting() {
                     call.parameters["id"] ?: return@patch call.respond(HttpStatusCode.BadRequest)
                 val command = CompleteTaskCommand(
                     taskId,
-                    userId =call.request.header("X-User-Id") ?: "default-user",
+                    userId =call.request.header("X-User-Id") ?: "00000000-0000-0000-0000-000000000000",
                 )
                 val result = completeHandler.execute(command)
                 result.onSuccess { completed ->
@@ -137,7 +137,7 @@ fun Application.configureRouting() {
                     call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
                 val command = DeleteTaskCommand(
                     id = taskId,
-                    userId = call.request.header("X-User-Id") ?: "default-user"
+                    userId = call.request.header("X-User-Id") ?: "00000000-0000-0000-0000-000000000000"
                 )
                 val result = deleteHandler.execute(command)
                 result

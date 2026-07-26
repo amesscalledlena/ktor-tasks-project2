@@ -1,6 +1,6 @@
 package com.example.domain.events.entity
 
-import com.example.domain.events.interfaces.Event
+import com.example.domain.events.core.Event
 
 abstract class EventSourceEntity<T : Event> {
 

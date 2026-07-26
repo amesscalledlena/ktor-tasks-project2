@@ -2,7 +2,7 @@ package com.example.infrastructure.repositories
 
 import com.example.domain.entities.Task
 import com.example.domain.events.core.TaskEvent
-import com.example.domain.events.interfaces.Event
+import com.example.domain.events.core.Event
 import com.example.domain.events.openclasses.EventAggregateId
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.infrastructure.tables.EventStoreTbl

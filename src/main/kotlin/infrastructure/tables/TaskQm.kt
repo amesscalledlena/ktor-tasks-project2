@@ -3,7 +3,7 @@ package com.example.infrastructure.tables
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.javatime.timestamp
 
-object TaskTbl : Table() {
+object TaskQm : Table() {
     val id = varchar("id", 36)
     val title = varchar("title", 255)
     val description = text("description")

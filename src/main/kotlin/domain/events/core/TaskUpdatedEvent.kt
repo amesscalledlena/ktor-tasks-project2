@@ -9,6 +9,7 @@ import com.example.domain.events.valueclasses.EventVersion
 import com.example.domain.valueobjects.TaskDescription
 import com.example.domain.valueobjects.TaskTitle
 import com.example.domain.valueobjects.UserId
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.Instant
 
@@ -25,6 +26,7 @@ data class TaskUpdatedEvent (
     val taskTitle: TaskTitle,
     val taskDescription: TaskDescription,
 ) : TaskEvent{
+    @SerialName("domain_event_type")
     override val type: EventType
     get() = EventType("TaskUpdatedEvent")
 }

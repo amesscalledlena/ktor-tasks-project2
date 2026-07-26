@@ -8,6 +8,7 @@ import com.example.domain.events.valueclasses.EventType
 import com.example.domain.events.valueclasses.EventVersion
 import com.example.domain.valueobjects.UserId
 import com.example.presentation.dtos.serializers.InstantSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.Instant
 import java.util.UUID
@@ -15,9 +16,11 @@ import java.util.UUID
 @Serializable
 data class TaskDeletedEvent (
     val taskId: EventId,
-    @Serializable(with = UUIDSerializer::class) val eventId: UUID = UUID.randomUUID(),
+    @Serializable(with = UUIDSerializer::class)
+    val eventId: UUID = UUID.randomUUID(),
     @Serializable(with = InstantSerializer::class)
     override val occurredOn: Instant = Instant.now(),
+    @SerialName("domain_event_type")
     override val type: EventType,
     override val aggregateId: EventAggregateId,
     override val sequence: EventSequence,

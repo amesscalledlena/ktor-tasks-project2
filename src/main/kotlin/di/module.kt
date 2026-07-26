@@ -9,6 +9,8 @@ import org.koin.dsl.module
 val infrastructureModule = module{
     // Whenever someone asks for the TaskRepository interface, give them a single, shared instance of ExposedTaskRepository
     single<TaskRepository> { ExposedTaskRepository() }
+
+    single<EventStoreRepository> { ExposedEventStoreRepository() }
 }
 
 val applicationModule = module {
@@ -32,8 +34,4 @@ val applicationModule = module {
     // Queries
     single { GetTaskQueryHandler(repository = get()) }
     single{ PaginatedTasksQueryHandler(repository = get() ) }
-}
-
-val eventModule = module {
-    single<EventStoreRepository> { ExposedEventStoreRepository() }
 }
