@@ -65,7 +65,7 @@ class ExposedTaskRepository : TaskRepository {
     }
 
     override fun update(task: Task): Boolean {
-        val updatedRowCount = TaskTbl.update({ TaskTbl.id eq task.id.value.toString() }) {
+        val updatedRowCount = TaskTbl.update({ TaskTbl.id eq task.id.value }) {
             it[TaskTbl.title] = task.title.value
             it[TaskTbl.description] = task.description.value
             it[TaskTbl.updatedAt] = task.updatedAt
@@ -78,7 +78,7 @@ class ExposedTaskRepository : TaskRepository {
     }
 
     override fun delete(id: String): Boolean {
-        val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id.value.toString()}
+        val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id.toString()}
         return deletedRowCount > 0
     }
 

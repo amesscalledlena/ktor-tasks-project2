@@ -39,13 +39,11 @@ class  UpdateTaskCommandHandler(
             is Result.Failure -> return Result.failure(res.failure)
         }
 
-        val eventStream = eventStoreRepository.getEventStream(idVO).map { it as TaskEvent } // Fetch ALL past events with this aggregate/task id
-        if (eventStream.isEmpty()) {
-            return Result.failure(TaskError.InvalidTitle("Task with ID ${command.id} not found"))
-        }
+        //TODO:- private constructor of Task
 
         // Rebuild the Task entity by replaying its history
-        val task = Task.fromDatabase(eventStream)
+        val task = eventStoreRepository.getEventStream(idVO)
+            ?: return Result.failure(TaskError.InvalidTitle("Task with ID ${command.id} not found"))
 
         val updatedTask = task.update(
             userId = userIdVO,

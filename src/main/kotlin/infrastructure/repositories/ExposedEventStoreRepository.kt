@@ -1,5 +1,7 @@
 package com.example.infrastructure.repositories
 
+import com.example.domain.entities.Task
+import com.example.domain.events.core.TaskEvent
 import com.example.domain.events.interfaces.Event
 import com.example.domain.events.openclasses.EventAggregateId
 import com.example.domain.interfaces.EventStoreRepository
@@ -31,14 +33,15 @@ class ExposedEventStoreRepository : EventStoreRepository {
         }
     }
 
-    override fun getEventStream(aggregateId: EventAggregateId): List<Event> {
-        return EventStoreTbl.selectAll().where { EventStoreTbl.aggregateId eq aggregateId.value }
+    override fun getEventStream(aggregateId: EventAggregateId): Task? {
+       val taskEvents = EventStoreTbl.selectAll().where { EventStoreTbl.aggregateId eq aggregateId.value }
             .orderBy(
                 EventStoreTbl.sequence to SortOrder.ASC
             )
             .map { row ->
                 val rawJson = row[EventStoreTbl.payload]
-                Json.decodeFromString<Event>(rawJson)
+                Json.decodeFromString<Event>(rawJson) as TaskEvent
             }
+        return Task.fromDatabase(taskEvents)
     }
 }

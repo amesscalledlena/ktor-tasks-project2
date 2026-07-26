@@ -2,13 +2,14 @@ package com.example.domain.entities
 
 import com.example.domain.events.core.*
 import com.example.domain.events.entity.EventSourceEntity
-import com.example.domain.events.interfaces.Event
 import com.example.domain.events.interfaces.EventId
-import com.example.domain.events.valueclasses.*
+import com.example.domain.events.valueclasses.EventSequence
+import com.example.domain.events.valueclasses.EventType
+import com.example.domain.events.valueclasses.EventVersion
+import com.example.domain.railway.Result
 import com.example.domain.railway.TaskError
-import java.time.Instant
-import com.example.domain.railway.*
 import com.example.domain.valueobjects.*
+import java.time.Instant
 
 //A Task can only process task-related events, not user-related events.
 //Why private constructor? Because state can only change because an event happened.
@@ -49,9 +50,8 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     private constructor(event: TaskEvent) : this() {
         raiseEvent(event)
     }
-    //TODO: create TaskQm and replace it with TaskTbl (repo) - Use/Create private constructor (Task)
 
-    private constructor(
+    /*private constructor(
         id: TaskId,
         title: TaskTitle,
         description: TaskDescription,
@@ -76,7 +76,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
                 taskDueDate = dueDate,
             )
         )
-    }
+    }*/
 
     override fun apply(event: TaskEvent) { // The only way to change the state of a task
         when (event) {
@@ -110,15 +110,21 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
             category: TaskCategory,
             dueDate: Instant?
         ): Result<Task, TaskError> {
-            val task = Task(
-                id = id,
-                title = title,
-                description = description,
-                userId = userId,
-                priority = priority,
-                category = category,
-                dueDate = dueDate
+            val initialEvent = TaskCreatedEvent(
+                taskTitle = title,
+                taskDescription = description,
+                aggregateId = id,
+                sequence = EventSequence(1),
+                occurredByUserId = userId,
+                taskId = EventId.fromDatabase(id.value),
+                type = EventType("TaskCreatedEvent"),
+                version = EventVersion(1),
+                id = EventId.generate(),
+                taskPriority = priority,
+                taskCategory = category,
+                taskDueDate = dueDate,
             )
+            val task = Task(initialEvent)
 
             //The constructor handles calling raiseEvent() internally.
             //raiseEvent will add it to the 'uncommitted events' list to be saved to the database later,
