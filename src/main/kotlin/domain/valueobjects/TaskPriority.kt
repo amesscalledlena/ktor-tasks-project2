@@ -1,6 +1,7 @@
 package com.example.domain.valueobjects
 
 import com.example.domain.railway.*
+import com.example.domain.railway.Result.Companion.success
 
 enum class TaskPriority {
     LOW,
@@ -12,10 +13,10 @@ enum class TaskPriority {
         fun create(value: String): Result<TaskPriority, TaskError> {
             val matchedPriority = entries.find{it.name.equals(value.trim(), ignoreCase = true)}
 
-            if (matchedPriority != null) {
-                return Result.success(matchedPriority)
+            return if (matchedPriority != null) {
+                success(matchedPriority)
             }else{
-                return Result.failure(TaskError.InvalidPriority("Invalid priority level."))
+                Result.failure(TaskError.InvalidPriority("Invalid priority level."))
             }
         }
     }

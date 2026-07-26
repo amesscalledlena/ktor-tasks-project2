@@ -19,10 +19,9 @@ sealed class Result<out T, out F: ResultFailure> {
         ): Result<RESULT, RESULT_FAILURE> {
 
             return if (a.isFailure || b.isFailure) {
-                val baseFailure = failure
-                a.failureOrNull?.also { baseFailure.addCause(it) }
-                b.failureOrNull?.also { baseFailure.addCause(it) }
-                failure(baseFailure)
+                a.failureOrNull?.also { failure.addCause(it) }
+                b.failureOrNull?.also { failure.addCause(it) }
+                failure(failure)
             } else {
                 success(mapSuccess(a.successOrException, b.successOrException))
             }
@@ -37,11 +36,10 @@ sealed class Result<out T, out F: ResultFailure> {
             mapSuccess: (A, B, C) -> RESULT
         ): Result<RESULT, RESULT_FAILURE> {
             return if (a.isFailure || b.isFailure || c.isFailure) {
-                val baseFailure = failure
-                a.failureOrNull?.also { baseFailure.addCause(it) }
-                b.failureOrNull?.also { baseFailure.addCause(it) }
-                c.failureOrNull?.also { baseFailure.addCause(it) }
-                failure(baseFailure)
+                a.failureOrNull?.also { failure.addCause(it) }
+                b.failureOrNull?.also { failure.addCause(it) }
+                c.failureOrNull?.also { failure.addCause(it) }
+                failure(failure)
             } else {
                 success(mapSuccess(a.successOrException, b.successOrException, c.successOrException))
             }
@@ -57,12 +55,11 @@ sealed class Result<out T, out F: ResultFailure> {
             mapSuccess: (A, B, C, D) -> RESULT
         ): Result<RESULT, RESULT_FAILURE> {
             return if (a.isFailure || b.isFailure || c.isFailure || d.isFailure) {
-                val baseFailure = failure
-                a.failureOrNull?.also { baseFailure.addCause(it) }
-                b.failureOrNull?.also { baseFailure.addCause(it) }
-                c.failureOrNull?.also { baseFailure.addCause(it) }
-                d.failureOrNull?.also { baseFailure.addCause(it) }
-                failure(baseFailure)
+                a.failureOrNull?.also { failure.addCause(it) }
+                b.failureOrNull?.also { failure.addCause(it) }
+                c.failureOrNull?.also { failure.addCause(it) }
+                d.failureOrNull?.also { failure.addCause(it) }
+                failure(failure)
             } else {
                 success(
                     mapSuccess(
@@ -89,19 +86,19 @@ sealed class Result<out T, out F: ResultFailure> {
         get() = if (this is Success) value else null
 
     val failureOrException: F
-        get() = if (this is Result.Failure) failure else TODO()
+        get() = if (this is Failure) failure else TODO()
     val successOrException: T
-        get() = if (this is Result.Success) value else TODO()
+        get() = if (this is Success) value else TODO()
 
     inline fun onSuccess(action: (value: T) -> Unit): Result<T, F> {
-        if (this is Result.Success) {
+        if (this is Success) {
             action(value)
         }
         return this
     }
 
     inline fun onFailure(action: (value: F) -> Unit): Result<T, F> {
-        if (this is Result.Failure) {
+        if (this is Failure) {
             action(this.failure)
         }
         return this

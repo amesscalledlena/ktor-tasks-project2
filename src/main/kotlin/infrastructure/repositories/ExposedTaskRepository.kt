@@ -15,7 +15,7 @@ import java.time.Instant
 class ExposedTaskRepository : TaskRepository {
     override fun save(task: Task) {
         TaskTbl.insert {
-            it[TaskTbl.id] = task.id.value.toString()
+            it[TaskTbl.id] = task.id.value
             it[TaskTbl.title] = task.title.value
             it[TaskTbl.description] = task.description.value
             it[TaskTbl.updatedAt] = Instant.now()
@@ -78,7 +78,7 @@ class ExposedTaskRepository : TaskRepository {
     }
 
     override fun delete(id: String): Boolean {
-        val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id.toString()}
+        val deletedRowCount = TaskTbl.deleteWhere { TaskTbl.id eq id}
         return deletedRowCount > 0
     }
 

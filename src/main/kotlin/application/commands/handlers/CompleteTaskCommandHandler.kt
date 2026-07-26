@@ -1,9 +1,6 @@
 package com.example.application.commands.handlers
 
 import com.example.application.commands.models.CompleteTaskCommand
-import com.example.domain.entities.Task
-import com.example.domain.events.core.TaskCompletedEvent
-import com.example.domain.events.core.TaskEvent
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.railway.Result
@@ -11,7 +8,6 @@ import com.example.domain.railway.TaskError
 import com.example.domain.valueobjects.TaskId
 import com.example.domain.valueobjects.UserId
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import java.time.Instant
 
 class CompleteTaskCommandHandler(
     private val repository: TaskRepository,
@@ -31,10 +27,8 @@ class CompleteTaskCommandHandler(
 
         // Rebuild the Task entity by replaying its history
         val task = eventStoreRepository.getEventStream(idVO)
-            ?: return Result.failure(TaskError.InvalidTitle("Task with ID ${command.id} not found"))
 
-        val completedTask = task.complete(userIdVO)
-        when (completedTask) {
+        when (val completedTask = task.complete(userIdVO)) {
             is Result.Failure -> return Result.failure(completedTask.failure)
             is Result.Success -> {}
         }

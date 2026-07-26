@@ -12,5 +12,5 @@ object EventStoreTbl: Table(){
     val occurredOn = timestamp("occurredOn")
     val payload = text("payload")
 
-    override val primaryKey = PrimaryKey(EventStoreTbl.id)
+    override val primaryKey = PrimaryKey(id)
 }

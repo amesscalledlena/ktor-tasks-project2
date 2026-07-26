@@ -1,15 +1,13 @@
 package com.example
 
-import com.example.di.*
-import com.example.infrastructure.tables.TaskTbl
+import com.example.di.applicationModule
+import com.example.di.infrastructureModule
 import com.example.presentation.plugins.configureRouting
 import com.example.presentation.plugins.configureSerialization
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import org.jetbrains.exposed.v1.jdbc.Database
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 
@@ -29,18 +27,3 @@ fun main(args : Array<String>) {
         module()
     }.start(wait = true)
 }
-
-// 1. TODO: Double task creation (Routing: Line 71) ✅
-// 2. TODO: Clean up the packages ✅
-// 3. TODO: Use complete from domain ✅
-// 4. TODO: Take transactions to use cases ✅
-// 5. TODO: Read about railway and use it in the use cases ✅
-// 6. TODO: Clean architecture book (jeldesh lacivert bood)
-// 7. TODO: DDD book
-// 8. TODO: Event saving format + Add JSON column
-// 9. TODO: Add more events if needed
-// 10. TODO: Learn about class/interface generics in kotlin
-// 11. TODO: Create TaskId that inherites from EventId
-// 12. TODO: Move the serializables to the presentation (?) layer
-// 13. TODO: Expand your Task/Event feautures (Pending status andblah blah)
-// 14. TODO: Design not approved: Figure out what's wrong with qm and change the DDD design to EDD

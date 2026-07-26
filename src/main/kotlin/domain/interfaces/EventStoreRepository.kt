@@ -5,6 +5,6 @@ import com.example.domain.events.interfaces.Event
 import com.example.domain.events.openclasses.EventAggregateId
 
 interface EventStoreRepository {
-    fun append(events: List<Event>): Unit
-    fun getEventStream(aggregateId: EventAggregateId): Task?
+    fun append(events: List<Event>)
+    fun getEventStream(aggregateId: EventAggregateId): Task
 }

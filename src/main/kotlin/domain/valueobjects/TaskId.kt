@@ -18,7 +18,7 @@ data class TaskId private constructor(override val value: String) :
         }
 
         fun fromDatabase(value: String): TaskId { // For DB loading
-            return TaskId(value.toString())
+            return TaskId(value)
         }
 
     }

@@ -5,14 +5,9 @@ import com.example.domain.events.openclasses.EventAggregateId
 import com.example.domain.events.valueclasses.EventSequence
 import com.example.domain.events.valueclasses.EventType
 import com.example.domain.events.valueclasses.EventVersion
-import com.example.domain.valueobjects.TaskCategory
-import com.example.domain.valueobjects.TaskDescription
-import com.example.domain.valueobjects.TaskId
-import com.example.domain.valueobjects.TaskPriority
-import com.example.domain.valueobjects.TaskTitle
-import com.example.domain.valueobjects.UserId
+import com.example.domain.valueobjects.*
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 data class TaskCreatedEvent(
     val taskId: EventId,

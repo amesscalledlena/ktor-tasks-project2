@@ -1,20 +1,19 @@
 package com.example.presentation.plugins
 
 import com.example.application.commands.handlers.CompleteTaskCommandHandler
-import com.example.application.commands.models.CreateTaskCommand
 import com.example.application.commands.handlers.CreateTaskCommandHandler
-import com.example.application.commands.models.DeleteTaskCommand
 import com.example.application.commands.handlers.DeleteTaskCommandHandler
-import com.example.application.commands.models.UpdateTaskCommand
 import com.example.application.commands.handlers.UpdateTaskCommandHandler
 import com.example.application.commands.models.CompleteTaskCommand
-import com.example.application.queries.models.GetTaskQuery
+import com.example.application.commands.models.CreateTaskCommand
+import com.example.application.commands.models.DeleteTaskCommand
+import com.example.application.commands.models.UpdateTaskCommand
 import com.example.application.queries.handlers.GetTaskQueryHandler
-import com.example.application.queries.models.PaginatedTasksQuery
 import com.example.application.queries.handlers.PaginatedTasksQueryHandler
+import com.example.application.queries.models.GetTaskQuery
+import com.example.application.queries.models.PaginatedTasksQuery
 import com.example.domain.valueobjects.TaskCategory
 import com.example.domain.valueobjects.TaskPriority
-import com.example.infrastructure.repositories.ExposedTaskRepository
 import com.example.presentation.dtos.PaginatedResponse
 import com.example.presentation.dtos.TaskResponse
 import com.example.presentation.dtos.TaskUpdate
@@ -28,8 +27,6 @@ import org.koin.ktor.ext.inject
 
 
 fun Application.configureRouting() {
-    val taskRepository = ExposedTaskRepository()
-
     val completeHandler by inject<CompleteTaskCommandHandler>()
     val createHandler by inject<CreateTaskCommandHandler>()
     val deleteHandler by inject<DeleteTaskCommandHandler>()
@@ -73,7 +70,7 @@ fun Application.configureRouting() {
                     )
                     call.respond(HttpStatusCode.OK, response)
                 }.onFailure { exception ->
-                    call.respond(HttpStatusCode.BadRequest, exception.message ?: "Failed to fetch tasks")
+                    call.respond(HttpStatusCode.BadRequest, exception.message)
                 }
             }
             //READ ONE
@@ -84,9 +81,9 @@ fun Application.configureRouting() {
                 val result = getTaskHandler.execute(query)
 
                 result.onSuccess { task ->
-                    call.respond(HttpStatusCode.OK, TaskResponse.fromDto(task!!))
+                    call.respond(HttpStatusCode.OK, TaskResponse.fromDto(task))
                 }.onFailure { exception ->
-                    call.respond(HttpStatusCode.NotFound, exception.message ?: "Task not found")
+                    call.respond(HttpStatusCode.NotFound, exception.message)
                 }
             }
             //UPDATE
@@ -110,7 +107,7 @@ fun Application.configureRouting() {
                 }.onFailure { exception ->
                     call.respond(
                         HttpStatusCode.BadRequest,
-                        exception.message ?: "Invalid update data"
+                        exception.message
                     ) // VO threw an error
                 }
 
@@ -130,7 +127,7 @@ fun Application.configureRouting() {
                         call.respond(HttpStatusCode.NotFound)
                     }
                 }.onFailure { exception ->
-                    call.respond(HttpStatusCode.NotFound, exception.message ?: "Task not found")
+                    call.respond(HttpStatusCode.NotFound, exception.message)
                 }
             }
 
@@ -152,7 +149,7 @@ fun Application.configureRouting() {
                         }
                     }
                     .onFailure { exception ->
-                        call.respond(HttpStatusCode.BadRequest, exception.message ?: "Failed to delete task")
+                        call.respond(HttpStatusCode.BadRequest, exception.message)
                     }
             }
         }

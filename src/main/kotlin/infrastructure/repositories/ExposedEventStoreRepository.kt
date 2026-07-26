@@ -33,7 +33,7 @@ class ExposedEventStoreRepository : EventStoreRepository {
         }
     }
 
-    override fun getEventStream(aggregateId: EventAggregateId): Task? {
+    override fun getEventStream(aggregateId: EventAggregateId): Task {
        val taskEvents = EventStoreTbl.selectAll().where { EventStoreTbl.aggregateId eq aggregateId.value }
             .orderBy(
                 EventStoreTbl.sequence to SortOrder.ASC

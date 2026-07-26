@@ -7,6 +7,7 @@ import com.example.domain.events.valueclasses.EventSequence
 import com.example.domain.events.valueclasses.EventType
 import com.example.domain.events.valueclasses.EventVersion
 import com.example.domain.valueobjects.UserId
+import com.example.presentation.dtos.serializers.InstantSerializer
 import kotlinx.serialization.Serializable
 import java.time.Instant
 import java.util.UUID

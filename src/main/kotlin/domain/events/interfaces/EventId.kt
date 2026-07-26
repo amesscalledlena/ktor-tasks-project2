@@ -2,10 +2,9 @@ package com.example.domain.events.interfaces
 
 import com.example.domain.railway.Result
 import com.example.domain.railway.TaskError
-import com.example.domain.valueobjects.TaskId
 import com.example.presentation.dtos.serializers.UUIDSerializer
 import kotlinx.serialization.Serializable
-import java.util.UUID
+import java.util.*
 
 @Serializable
 @JvmInline
@@ -15,7 +14,7 @@ value class EventId private constructor(@Serializable(with = UUIDSerializer::cla
             return EventId(UUID.randomUUID())
         }
 
-        fun create(id: String): com.example.domain.railway.Result<EventId, TaskError> { // Only for validation
+        fun create(id: String): Result<EventId, TaskError> { // Only for validation
             val validId = EventId(UUID.fromString(id))
             return Result.Success(validId)
         }

@@ -1,8 +1,6 @@
 package com.example.application.commands.handlers
 
 import com.example.application.commands.models.DeleteTaskCommand
-import com.example.domain.entities.Task
-import com.example.domain.events.core.TaskEvent
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.railway.Result
@@ -29,10 +27,8 @@ class  DeleteTaskCommandHandler(
 
         // Rebuild the Task entity by replaying its history
         val task = eventStoreRepository.getEventStream(idVO)
-            ?: return Result.failure(TaskError.InvalidTitle("Task with ID ${command.id} not found"))
 
-        val deletedTask = task.delete(userIdVO)
-        when (deletedTask) {
+        when (val deletedTask = task.delete(userIdVO)) {
             is Result.Failure -> return Result.failure(deletedTask.failure)
             is Result.Success -> {}
         }

@@ -1,8 +1,6 @@
 package com.example.infrastructure.tables
 
 import org.jetbrains.exposed.v1.core.Table
-import org.jetbrains.exposed.v1.javatime.datetime
-import org.jetbrains.exposed.v1.javatime.time
 import org.jetbrains.exposed.v1.javatime.timestamp
 
 object TaskTbl : Table() {

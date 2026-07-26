@@ -1,13 +1,10 @@
 package com.example.application.commands.handlers
 
 import com.example.application.commands.models.UpdateTaskCommand
-import com.example.domain.entities.Task
-import com.example.domain.events.core.TaskEvent
-import com.example.domain.events.core.TaskUpdatedEvent
 import com.example.domain.interfaces.EventStoreRepository
 import com.example.domain.interfaces.TaskRepository
-import com.example.domain.railway.*
-import com.example.domain.railway.Result.Companion.zip
+import com.example.domain.railway.Result
+import com.example.domain.railway.TaskError
 import com.example.domain.valueobjects.TaskDescription
 import com.example.domain.valueobjects.TaskId
 import com.example.domain.valueobjects.TaskTitle
@@ -43,7 +40,6 @@ class  UpdateTaskCommandHandler(
 
         // Rebuild the Task entity by replaying its history
         val task = eventStoreRepository.getEventStream(idVO)
-            ?: return Result.failure(TaskError.InvalidTitle("Task with ID ${command.id} not found"))
 
         val updatedTask = task.update(
             userId = userIdVO,
