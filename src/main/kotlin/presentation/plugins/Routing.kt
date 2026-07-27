@@ -1,19 +1,17 @@
 package com.example.presentation.plugins
 
-import com.example.application.commands.handlers.CompleteTaskCommandHandler
-import com.example.application.commands.handlers.CreateTaskCommandHandler
-import com.example.application.commands.handlers.DeleteTaskCommandHandler
-import com.example.application.commands.handlers.UpdateTaskCommandHandler
-import com.example.application.commands.models.CompleteTaskCommand
-import com.example.application.commands.models.CreateTaskCommand
-import com.example.application.commands.models.DeleteTaskCommand
-import com.example.application.commands.models.UpdateTaskCommand
-import com.example.application.queries.handlers.GetTaskQueryHandler
-import com.example.application.queries.handlers.PaginatedTasksQueryHandler
-import com.example.application.queries.models.GetTaskQuery
-import com.example.application.queries.models.PaginatedTasksQuery
-import com.example.domain.valueobjects.TaskCategory
-import com.example.domain.valueobjects.TaskPriority
+import com.example.application.task.commands.handlers.CompleteTaskCommandHandler
+import com.example.application.task.commands.handlers.CreateTaskCommandHandler
+import com.example.application.task.commands.handlers.DeleteTaskCommandHandler
+import com.example.application.task.commands.handlers.UpdateTaskCommandHandler
+import com.example.application.task.commands.models.CompleteTaskCommand
+import com.example.application.task.commands.models.CreateTaskCommand
+import com.example.application.task.commands.models.DeleteTaskCommand
+import com.example.application.task.commands.models.UpdateTaskCommand
+import com.example.application.task.queries.handlers.GetTaskQueryHandler
+import com.example.application.task.queries.handlers.PaginatedTasksQueryHandler
+import com.example.application.task.queries.models.GetTaskQuery
+import com.example.application.task.queries.models.PaginatedTasksQuery
 import com.example.presentation.dtos.PaginatedResponse
 import com.example.presentation.dtos.TaskResponse
 import com.example.presentation.dtos.TaskUpdate
@@ -38,7 +36,7 @@ fun Application.configureRouting() {
         swaggerUI(
             path = "swagger",
             swaggerFile = "openapi.yaml"
-        ) //This will host your YAML file on a web interface at http://localhost:8080/swagger
+        ) //This will host the YAML file on a web interface at http://localhost:8080/swagger
 
         route("/tasks") {
             //CREATE

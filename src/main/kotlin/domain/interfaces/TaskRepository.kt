@@ -1,7 +1,7 @@
 package com.example.domain.interfaces
 
 import com.example.domain.entities.Task
-import com.example.domain.valueobjects.TaskId
+import com.example.domain.valueobjects.task.TaskId
 import com.example.presentation.dtos.TaskDto
 
 interface TaskRepository {

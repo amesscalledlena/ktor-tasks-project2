@@ -8,7 +8,13 @@ import com.example.domain.events.valueclasses.EventType
 import com.example.domain.events.valueclasses.EventVersion
 import com.example.domain.railway.Result
 import com.example.domain.railway.TaskError
-import com.example.domain.valueobjects.*
+import com.example.domain.valueobjects.task.TaskCategory
+import com.example.domain.valueobjects.task.TaskDescription
+import com.example.domain.valueobjects.task.TaskId
+import com.example.domain.valueobjects.task.TaskPriority
+import com.example.domain.valueobjects.task.TaskStatus
+import com.example.domain.valueobjects.task.TaskTitle
+import com.example.domain.valueobjects.task.UserId
 import java.time.Instant
 
 //A Task can only process task-related events, not user-related events.

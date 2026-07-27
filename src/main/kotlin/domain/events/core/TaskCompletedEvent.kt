@@ -6,7 +6,7 @@ import com.example.domain.events.openclasses.EventAggregateId
 import com.example.domain.events.valueclasses.EventSequence
 import com.example.domain.events.valueclasses.EventType
 import com.example.domain.events.valueclasses.EventVersion
-import com.example.domain.valueobjects.UserId
+import com.example.domain.valueobjects.task.UserId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.Instant

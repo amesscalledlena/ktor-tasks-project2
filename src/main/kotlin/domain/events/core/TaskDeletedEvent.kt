@@ -6,7 +6,7 @@ import com.example.presentation.dtos.serializers.UUIDSerializer
 import com.example.domain.events.valueclasses.EventSequence
 import com.example.domain.events.valueclasses.EventType
 import com.example.domain.events.valueclasses.EventVersion
-import com.example.domain.valueobjects.UserId
+import com.example.domain.valueobjects.task.UserId
 import com.example.presentation.dtos.serializers.InstantSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

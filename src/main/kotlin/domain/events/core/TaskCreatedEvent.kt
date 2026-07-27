@@ -5,7 +5,11 @@ import com.example.domain.events.openclasses.EventAggregateId
 import com.example.domain.events.valueclasses.EventSequence
 import com.example.domain.events.valueclasses.EventType
 import com.example.domain.events.valueclasses.EventVersion
-import com.example.domain.valueobjects.*
+import com.example.domain.valueobjects.task.TaskCategory
+import com.example.domain.valueobjects.task.TaskDescription
+import com.example.domain.valueobjects.task.TaskPriority
+import com.example.domain.valueobjects.task.TaskTitle
+import com.example.domain.valueobjects.task.UserId
 import com.example.presentation.dtos.serializers.InstantSerializer
 import com.example.presentation.dtos.serializers.UUIDSerializer
 import kotlinx.serialization.SerialName
