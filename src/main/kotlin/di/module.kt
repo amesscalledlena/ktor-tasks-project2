@@ -10,7 +10,7 @@ val infrastructureModule = module{
     // Whenever someone asks for the TaskRepository interface, give them a single, shared instance of ExposedTaskRepository
     single<TaskRepository> { ExposedTaskRepository() }
 
-    single<EventStoreRepository> { ExposedEventStoreRepository() }
+    single<EventStoreRepository> { ExposedEventStoreRepository(get()) }
 }
 
 val applicationModule = module {

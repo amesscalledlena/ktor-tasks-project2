@@ -9,6 +9,5 @@ interface TaskRepository {
     fun findById(id: TaskId): TaskDto?
     fun findAllPaginated(limit: Int, offset: Long): List<TaskDto>
     fun count(): Long
-    fun update(task: Task): Boolean
     fun delete(id: String): Boolean
 }

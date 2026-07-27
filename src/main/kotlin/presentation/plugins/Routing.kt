@@ -47,8 +47,8 @@ fun Application.configureRouting() {
                 val command = CreateTaskCommand(
                     newTask.    title, newTask.description,
                     userId = call.request.header("X-User-Id") ?: "00000000-0000-0000-0000-000000000000",
-                    priority = TaskPriority.valueOf(newTask.priority ?: "MEDIUM").toString(),
-                    category = TaskCategory.create(newTask.category ?: "General").toString()
+                    priority = newTask.priority ?: "MEDIUM",
+                    category = newTask.category ?: "General"
                 )
                 val newTaskId = createHandler.execute(command)
                 call.respond(HttpStatusCode.Created, "Created new task with ID $newTaskId")

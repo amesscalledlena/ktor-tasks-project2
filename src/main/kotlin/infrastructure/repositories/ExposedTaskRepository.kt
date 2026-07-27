@@ -14,17 +14,31 @@ import java.time.Instant
 
 class ExposedTaskRepository : TaskRepository {
     override fun save(task: Task) {
-        TaskQm.insert {
-            it[TaskQm.id] = task.id.value
-            it[TaskQm.title] = task.title.value
-            it[TaskQm.description] = task.description.value
-            it[TaskQm.updatedAt] = Instant.now()
-            it[TaskQm.createdAt] = task.createdAt
-            it[status] = task.status.name
-            it[priority] = task.priority.name
-            it[category] = task.category.value
-            it[dueDate] = task.dueDate
+        val existingRowCount = TaskQm.selectAll().where{TaskQm.id eq task.id.value}.count()
+        if(existingRowCount > 0){
+            TaskQm.update({ TaskQm.id eq task.id.value }) {
+                it[TaskQm.title] = task.title.value
+                it[TaskQm.description] = task.description.value
+                it[TaskQm.updatedAt] = task.updatedAt
+                it[status] = task.status.name
+                it[priority] = task.priority.name
+                it[category] = task.category.value
+                it[dueDate] = task.dueDate
+            }
+        }else {
+            TaskQm.insert {
+                it[TaskQm.id] = task.id.value
+                it[TaskQm.title] = task.title.value
+                it[TaskQm.description] = task.description.value
+                it[TaskQm.updatedAt] = Instant.now()
+                it[TaskQm.createdAt] = task.createdAt
+                it[status] = task.status.name
+                it[priority] = task.priority.name
+                it[category] = task.category.value
+                it[dueDate] = task.dueDate
+            }
         }
+
     }
 
     override fun findById(id: TaskId): TaskDto? {
@@ -62,19 +76,6 @@ class ExposedTaskRepository : TaskRepository {
                     category = row[TaskQm.category]
                 )
             }
-    }
-
-    override fun update(task: Task): Boolean {
-        val updatedRowCount = TaskQm.update({ TaskQm.id eq task.id.value }) {
-            it[TaskQm.title] = task.title.value
-            it[TaskQm.description] = task.description.value
-            it[TaskQm.updatedAt] = task.updatedAt
-            it[status] = task.status.name
-            it[priority] = task.priority.name
-            it[category] = task.category.value
-            it[dueDate] = task.dueDate
-        }
-        return updatedRowCount > 0
     }
 
     override fun delete(id: String): Boolean {

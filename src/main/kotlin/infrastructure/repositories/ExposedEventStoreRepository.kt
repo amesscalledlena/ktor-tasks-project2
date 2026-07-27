@@ -11,12 +11,17 @@ import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
-class ExposedEventStoreRepository : EventStoreRepository {
+class ExposedEventStoreRepository(private val taskReposiroty: ExposedTaskRepository) : EventStoreRepository {
 
     private val json = Json { // Create a configured Json instance for the repository
         ignoreUnknownKeys = true
     }
+
+
+// TODO: Make update and save the same function in qm - let append (here) handle them
+// TODO: Presentation subject: The difference between clean and ddd
 
     override fun append(events: List<Event>) {
         for(event in events) {
@@ -31,6 +36,12 @@ class ExposedEventStoreRepository : EventStoreRepository {
                 it[occurredOn] = event.occurredOn
             }
         }
+        val aggId = events.last().aggregateId
+
+        val taskCurrentStage = getEventStream(aggId)
+
+        taskReposiroty.save(taskCurrentStage)
+
     }
 
     override fun getEventStream(aggregateId: EventAggregateId): Task {

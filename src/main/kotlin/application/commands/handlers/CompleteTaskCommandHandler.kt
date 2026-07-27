@@ -36,7 +36,7 @@ class CompleteTaskCommandHandler(
                 }
                 is Result.Success -> {
                     eventStoreRepository.append(task.getRecordedEvents())
-                    repository.update(task)
+                    repository.save(task)
                     return@transaction Result.success(true)
                 }
             }
