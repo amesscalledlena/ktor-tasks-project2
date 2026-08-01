@@ -1,5 +1,9 @@
 package com.example.presentation.plugins
 
+import com.example.application.step.commands.CreateTaskStep
+import com.example.application.step.commands.CreateTaskStepHandler
+import com.example.application.step.queries.GetTaskStep
+import com.example.application.step.queries.GetTaskStepHandler
 import com.example.application.task.commands.handlers.CompleteTaskCommandHandler
 import com.example.application.task.commands.handlers.CreateTaskCommandHandler
 import com.example.application.task.commands.handlers.DeleteTaskCommandHandler
@@ -12,9 +16,11 @@ import com.example.application.task.queries.handlers.GetTaskQueryHandler
 import com.example.application.task.queries.handlers.PaginatedTasksQueryHandler
 import com.example.application.task.queries.models.GetTaskQuery
 import com.example.application.task.queries.models.PaginatedTasksQuery
-import com.example.presentation.dtos.PaginatedResponse
-import com.example.presentation.dtos.TaskResponse
-import com.example.presentation.dtos.TaskUpdate
+import com.example.presentation.dtos.task.PaginatedResponse
+import com.example.presentation.dtos.task.TaskResponse
+import com.example.presentation.dtos.step.TaskStepRequest
+import com.example.presentation.dtos.step.TaskStepResponse
+import com.example.presentation.dtos.task.TaskUpdate
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.swagger.*
@@ -31,6 +37,10 @@ fun Application.configureRouting() {
     val updateHandler by inject<UpdateTaskCommandHandler>()
     val getPaginatedHandler by inject<PaginatedTasksQueryHandler>()
     val getTaskHandler by inject<GetTaskQueryHandler>()
+    val createStepHandler by inject<CreateTaskStepHandler>()
+    val getStepHandler by inject<GetTaskStepHandler>()
+
+    //TODO: 1. UpdatedAt dar domain handle beshe. 2. Attribute limit beshe size va limit calculate beshe. 3. Read All ba option filter kardan.
 
     routing {
         swaggerUI(
@@ -149,6 +159,38 @@ fun Application.configureRouting() {
                     .onFailure { exception ->
                         call.respond(HttpStatusCode.BadRequest, exception.message)
                     }
+            }
+        }
+
+        route("/task-steps") {
+
+            // CREATE A STEP
+            post {
+                val request = call.receive<TaskStepRequest>()
+                val command = CreateTaskStep(title = request.title)
+
+                val result = createStepHandler.execute(command)
+
+                result.onSuccess { newStepId ->
+                    call.respond(HttpStatusCode.Created, "Created new step with ID $newStepId")
+                }.onFailure { error ->
+                    call.respond(HttpStatusCode.BadRequest, error.message)
+                }
+            }
+
+            // GET A STEP
+            get("/{id}") {
+                val stepId = call.parameters["id"]?.toIntOrNull()
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Not a valid number")
+
+                val query = GetTaskStep(id = stepId)
+                val result = getStepHandler.execute(query)
+
+                result.onSuccess { taskStep ->
+                    call.respond(HttpStatusCode.OK, TaskStepResponse.fromDto(taskStep))
+                }.onFailure { error ->
+                    call.respond(HttpStatusCode.NotFound, error.message)
+                }
             }
         }
     }

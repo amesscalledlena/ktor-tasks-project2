@@ -1,4 +1,4 @@
-package com.example.presentation.dtos
+package com.example.presentation.dtos.task
 
 import kotlinx.serialization.Serializable
 

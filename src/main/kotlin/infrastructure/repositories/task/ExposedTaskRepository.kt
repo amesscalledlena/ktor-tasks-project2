@@ -4,41 +4,26 @@ import com.example.domain.entities.Task
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.valueobjects.task.TaskId
 import com.example.infrastructure.tables.TaskQm
-import com.example.presentation.dtos.TaskDto
+import com.example.presentation.dtos.task.TaskDto
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.update
+import org.jetbrains.exposed.v1.jdbc.upsert
 import java.time.Instant
 
 class ExposedTaskRepository : TaskRepository {
     override fun save(task: Task) {
-        val existingRowCount = TaskQm.selectAll().where{TaskQm.id eq task.id.value}.count()
-        if(existingRowCount > 0){
-            TaskQm.update({ TaskQm.id eq task.id.value }) {
-                it[TaskQm.title] = task.title.value
-                it[TaskQm.description] = task.description.value
-                it[TaskQm.updatedAt] = task.updatedAt
-                it[status] = task.status.name
-                it[priority] = task.priority.name
-                it[category] = task.category.value
-                it[dueDate] = task.dueDate
-            }
-        }else {
-            TaskQm.insert {
-                it[TaskQm.id] = task.id.value
-                it[TaskQm.title] = task.title.value
-                it[TaskQm.description] = task.description.value
-                it[TaskQm.updatedAt] = Instant.now()
-                it[TaskQm.createdAt] = task.createdAt
-                it[status] = task.status.name
-                it[priority] = task.priority.name
-                it[category] = task.category.value
-                it[dueDate] = task.dueDate
-            }
+        TaskQm.upsert {
+            it[TaskQm.id] = task.id.value
+            it[TaskQm.title] = task.title.value
+            it[TaskQm.description] = task.description.value
+            it[TaskQm.updatedAt] = Instant.now()
+            it[TaskQm.createdAt] = task.createdAt
+            it[status] = task.status.name
+            it[priority] = task.priority.name
+            it[category] = task.category.value
+            it[dueDate] = task.dueDate
         }
-
     }
 
     override fun findById(id: TaskId): TaskDto? {

@@ -3,11 +3,11 @@ package com.example.domain.entities
 import com.example.domain.valueobjects.step.TaskStepId
 import com.example.domain.valueobjects.step.TaskStepTitle
 
-class TaskStep (
+class TaskStep(
     var id: TaskStepId,
     var title: TaskStepTitle,
-    ){
-    companion object{
+) {
+    companion object {
         fun create(
             title: TaskStepTitle,
         ): TaskStep {

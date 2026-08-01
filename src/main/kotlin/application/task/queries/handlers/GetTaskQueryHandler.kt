@@ -4,7 +4,7 @@ import com.example.application.task.queries.models.GetTaskQuery
 import com.example.domain.interfaces.TaskRepository
 import com.example.domain.railway.*
 import com.example.domain.valueobjects.task.TaskId
-import com.example.presentation.dtos.TaskDto
+import com.example.presentation.dtos.task.TaskDto
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class GetTaskQueryHandler(private val repository: TaskRepository) {

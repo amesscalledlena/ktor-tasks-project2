@@ -1,6 +1,6 @@
 package com.example.application.task.queries.models
 
-import com.example.presentation.dtos.TaskDto
+import com.example.presentation.dtos.task.TaskDto
 
 data class PaginatedTasksResultQuery(
     val tasks: List<TaskDto>,
