@@ -2,10 +2,14 @@ package com.example.infrastructure.repositories.task
 
 import com.example.domain.entities.Task
 import com.example.domain.interfaces.TaskRepository
+import com.example.domain.valueobjects.task.TaskCategory
 import com.example.domain.valueobjects.task.TaskId
+import com.example.domain.valueobjects.task.TaskPriority
+import com.example.domain.valueobjects.task.TaskStatus
 import com.example.infrastructure.tables.TaskQm
 import com.example.presentation.dtos.task.TaskDto
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.andWhere
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.upsert
@@ -43,9 +47,25 @@ class ExposedTaskRepository : TaskRepository {
             }.singleOrNull()
     }
 
-    override fun findAllPaginated(limit: Int, offset: Long): List<TaskDto> {
-        return TaskQm.selectAll()
-            .limit(limit)
+    override fun findAllPaginated(
+        limit: Int,
+        offset: Long,
+        status: TaskStatus?,
+        priority: TaskPriority?,
+        category: TaskCategory?
+    ): List<TaskDto> {
+        val query =TaskQm.selectAll()
+        if(status != null){
+            query.andWhere { TaskQm.status eq status.name }
+        }
+        if(priority != null){
+            query.andWhere { TaskQm.priority eq priority.name }
+        }
+        if(category != null){
+            query.andWhere { TaskQm.category eq category.value }
+        }
+
+        return query.limit(limit)
             .offset(offset)
             .map { row ->
                 TaskDto(
@@ -67,7 +87,19 @@ class ExposedTaskRepository : TaskRepository {
         return deletedRowCount > 0
     }
 
-    override fun count(): Long {
-        return TaskQm.selectAll().count()
+    override fun count(status: TaskStatus?, priority: TaskPriority?, category: TaskCategory?): Long {
+        val query = TaskQm.selectAll()
+
+        if (status != null) {
+            query.andWhere { TaskQm.status eq status.name }
+        }
+        if (priority != null) {
+            query.andWhere { TaskQm.priority eq priority.name }
+        }
+        if (category != null) {
+            query.andWhere { TaskQm.category eq category.value }
+        }
+
+        return query.count()
     }
 }

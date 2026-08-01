@@ -65,8 +65,17 @@ fun Application.configureRouting() {
             get {
                 val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
                 val size = call.request.queryParameters["size"]?.toIntOrNull() ?: 10
+                val status = call.request.queryParameters["status"]
+                val priority = call.request.queryParameters["priority"]
+                val category = call.request.queryParameters["category"]
 
-                val query = PaginatedTasksQuery(size= size, page = page)
+                val query = PaginatedTasksQuery(
+                    size = size,
+                    page = page,
+                    status = status,
+                    priority = priority,
+                    category = category,
+                )
                 val result = getPaginatedHandler.execute(query)
 
                 result.onSuccess { paginatedResult ->
