@@ -9,6 +9,7 @@ import com.example.domain.events.core.TaskEvent
 import com.example.domain.events.core.TaskUpdatedEvent
 import com.example.domain.events.openclasses.EventAggregateId
 import com.example.domain.interfaces.EventStoreRepository
+import com.example.domain.interfaces.TaskRepository
 import com.example.infrastructure.tables.EventStoreTbl
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.v1.core.SortOrder
@@ -16,7 +17,7 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 
-class ExposedEventStoreRepository(private val taskRepository: ExposedTaskRepository) : EventStoreRepository {
+class ExposedEventStoreRepository(private val taskRepository: TaskRepository) : EventStoreRepository {
 
     private val json = Json { // Create a configured Json instance for the repository
         ignoreUnknownKeys = true

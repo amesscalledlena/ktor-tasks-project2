@@ -4,6 +4,7 @@ import com.example.di.applicationModule
 import com.example.di.infrastructureModule
 import com.example.infrastructure.tables.EventStoreTbl
 import com.example.infrastructure.tables.TaskQm
+import com.example.infrastructure.tables.TaskStepTbl
 import com.example.presentation.plugins.configureRouting
 import com.example.presentation.plugins.configureSerialization
 import io.ktor.server.application.*
@@ -34,7 +35,7 @@ fun main(args : Array<String>) {
 
     //Infrastructure Setup
     transaction {
-        SchemaUtils.create(TaskQm, EventStoreTbl)
+        SchemaUtils.create(TaskQm, EventStoreTbl, TaskStepTbl)
     }
 
     embeddedServer(CIO, port = 8080, host = "0.0.0.0") {

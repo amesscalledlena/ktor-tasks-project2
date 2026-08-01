@@ -40,8 +40,6 @@ fun Application.configureRouting() {
     val createStepHandler by inject<CreateTaskStepHandler>()
     val getStepHandler by inject<GetTaskStepHandler>()
 
-    //TODO: 1. UpdatedAt dar domain handle beshe. 2. Attribute limit beshe size va limit calculate beshe. 3. Read All ba option filter kardan.
-
     routing {
         swaggerUI(
             path = "swagger",
@@ -73,7 +71,7 @@ fun Application.configureRouting() {
                     size = size,
                     page = page,
                     status = status,
-                    priority = priority,
+                    priority = priority ,
                     category = category,
                 )
                 val result = getPaginatedHandler.execute(query)

@@ -1,5 +1,7 @@
 package com.example.di
 
+import com.example.application.step.commands.CreateTaskStepHandler
+import com.example.application.step.queries.GetTaskStepHandler
 import com.example.application.task.commands.handlers.CompleteTaskCommandHandler
 import com.example.application.task.commands.handlers.CreateTaskCommandHandler
 import com.example.application.task.commands.handlers.DeleteTaskCommandHandler
@@ -50,4 +52,8 @@ val applicationModule = module {
     // Queries
     single { GetTaskQueryHandler(repository = get()) }
     single{ PaginatedTasksQueryHandler(repository = get()) }
+
+    //Step
+    single { CreateTaskStepHandler(repository = get()) }
+    single { GetTaskStepHandler(repository = get()) }
 }
