@@ -9,7 +9,6 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.upsert
-import java.time.Instant
 
 class ExposedTaskRepository : TaskRepository {
     override fun save(task: Task) {
@@ -17,7 +16,7 @@ class ExposedTaskRepository : TaskRepository {
             it[TaskQm.id] = task.id.value
             it[TaskQm.title] = task.title.value
             it[TaskQm.description] = task.description.value
-            it[TaskQm.updatedAt] = Instant.now()
+            it[TaskQm.updatedAt] = task.updatedAt
             it[TaskQm.createdAt] = task.createdAt
             it[status] = task.status.name
             it[priority] = task.priority.name

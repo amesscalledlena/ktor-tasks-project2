@@ -53,43 +53,20 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     var dueDate: Instant? = null
         private set
 
+    var version: Long = 0
+        private set
+
     private constructor(event: TaskEvent) : this() {
         raiseEvent(event)
     }
 
-    /*private constructor(
-        id: TaskId,
-        title: TaskTitle,
-        description: TaskDescription,
-        userId: UserId,
-        priority: TaskPriority,
-        category: TaskCategory,
-        dueDate: Instant?
-    ) : this() {
-        raiseEvent(
-            TaskCreatedEvent(
-                taskTitle = title,
-                taskDescription = description,
-                aggregateId = id,
-                sequence = EventSequence(1),
-                occurredByUserId = userId,
-                taskId = EventId.fromDatabase(id.value),
-                type = EventType("TaskCreatedEvent"),
-                version = EventVersion(1),
-                id = EventId.generate(),
-                taskPriority = priority,
-                taskCategory = category,
-                taskDueDate = dueDate,
-            )
-        )
-    }*/
-
     override fun apply(event: TaskEvent) { // The only way to change the state of a task
+        this.version++
         when (event) {
             is TaskCreatedEvent -> applyCreated(event)
             is TaskUpdatedEvent -> applyUpdated(event)
             is TaskCompletedEvent -> applyCompleted(event)
-            else -> {}
+            is TaskDeletedEvent -> applyDeleted(event)
         }
 
     }
@@ -139,7 +116,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     fun update(userId: UserId, title: TaskTitle, description: TaskDescription): Result<Task, TaskError> {
         val event = TaskUpdatedEvent(
             aggregateId = this.id,
-            sequence = EventSequence(this.getRecordedEvents().size + 1L),
+            sequence = EventSequence(this.version + 1L),
             occurredByUserId = userId,
             taskTitle = title,
             taskDescription = description,
@@ -153,7 +130,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     fun complete(userId: UserId): Result<Task, TaskError> {
         val event = TaskCompletedEvent(
             aggregateId = this.id,
-            sequence = EventSequence(this.getRecordedEvents().size + 1L),
+            sequence = EventSequence(this.version + 1L),
             occurredByUserId = userId,
         )
 
@@ -164,7 +141,7 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     fun delete (userId: UserId): Result<Task, TaskError> {
         val event = TaskDeletedEvent(
             aggregateId = this.id,
-            sequence = EventSequence(this.getRecordedEvents().size + 1L),
+            sequence = EventSequence(this.version + 1L),
             occurredByUserId = userId,
             taskId = EventId.fromDatabase(this.id.value) ,
             type = EventType("TaskDeletedEvent"),
@@ -196,5 +173,10 @@ class Task private constructor() : EventSourceEntity<TaskEvent>() {
     private fun applyCompleted(event: TaskCompletedEvent){
         this.status = TaskStatus.DONE
         this.completedAt = event.occurredOn
+        this.updatedAt = event.occurredOn
+    }
+
+    private fun applyDeleted(event: TaskDeletedEvent){
+        this.updatedAt = event.occurredOn
     }
 }
